@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
+const sanitize = require("../utils/sanititizeBody")
 
 const fields = {
     getIdea: {id: "string"},
@@ -13,7 +14,6 @@ router.get("/", validate(fields.getIdea), (req, res) => {
     const id = req.query.id;
     let idea = {
         name: "Football",
-        price: "unknown",
         recipient: "Johnny"
     }
     res.json({idea})
@@ -30,7 +30,7 @@ router.put("/", validate(fields.editIdea), sanitize(fields.addIdea), (req, res) 
     res.json({message: "success"})
 })
 
-router.delete("/", validate(fields.removeGift), (req, res) => {
+router.delete("/", validate(fields.removeIdea), (req, res) => {
     const id = req.body.id
     res.json({message: "success"})
 })

@@ -16,6 +16,6 @@ app.get("/", (req, res) => {
 // app.use("/user", require("./src/routes/user"))
 app.use("/gift", require("./src/routes/gift"))
 app.use("/idea", require("./src/routes/idea"))
-// app.use("/recipient", require("./src/routes/recipient"))
+app.use("/recipient", require("./src/routes/recipient"))
 
 app.listen(port, () => console.log(`app listening at http://localhost:${port}`))
