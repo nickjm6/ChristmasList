@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
     res.sendFile(`${__dirname}/frontend/index.html`)
 })
 
-// app.use("/user", require("./src/routes/user"))
+app.use("/user", require("./src/routes/user"))
 app.use("/gift", require("./src/routes/gift"))
 app.use("/idea", require("./src/routes/idea"))
 app.use("/recipient", require("./src/routes/recipient"))
