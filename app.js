@@ -1,8 +1,16 @@
 const express = require("express");
 const app = express()
 const bodyParser = require("body-parser")
+const mongoose = require("mongoose")
 
 require("dotenv").config()
+
+const mongoAddress = process.env.MONGO_ADDR
+if(!mongoAddress || typeof mongoAddress !== "string" || !/^mongodb:\/\/[a-zA-Z]+\/[a-zA-Z]+$/.test(mongoAddress))
+    throw new Error("please set a valid mongodb address in .env with the name MONGO_ADDR")
+
+mongoose.set("useUnifiedTopology", true)
+mongoose.connect(mongoAddress, {useNewUrlParser: true})
 
 const port = process.env.PORT || 8080
 

@@ -5,7 +5,7 @@ const sanitize = require("../utils/sanititizeBody")
 
 const fields = {
     getGift: {id: "string"},
-    addGift: {name: "string", price: "number", recipientId: "string"},
+    addGift: {name: "string", price: "number", recipientId: "string", userId: "string"},
     editGift: {id: "string", values: "object"},
     removeGift: {id: "string"}
 }
@@ -15,14 +15,15 @@ router.get("/", validate(fields.getGift), (req, res) => {
     let gift = {
         name: "Football",
         price: 12.99,
-        recipient: "Johnny"
+        recipient: "Johnny",
+        username: "Nick"
     }
     res.json({gift})
 });
 
 router.post("/", validate(fields.addGift), (req, res) => {
     const {name, price, recipientId} = req.body;
-    const newGift = {name, price, recipientId}
+    const newGift = {name, price, recipientId, userId}
     res.json({message: "success"})
 })
 
