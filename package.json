@@ -1,0 +1,19 @@
+{
+  "name": "christmaslist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickjm6/ChristmasList.git"
+  },
+  "author": "Nick Monteleone",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nickjm6/ChristmasList/issues"
+  },
+  "homepage": "https://github.com/nickjm6/ChristmasList#readme"
+}
