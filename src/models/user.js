@@ -6,5 +6,13 @@ let userSchema = Schema({
     ideas: [Schema.Types.ObjectId],
     gifts: [Schema.Types.ObjectId]
 })
-
-module.exports = model("user", userSchema)
+let userModel = model("user", userSchema)
+userModel.prototype.toString = function() {
+    return JSON.stringify({
+        username: this.username,
+        recipients: this.recipients ? this.recipients.map(rec => rec.toString()) : [],
+        ideas: this.ideas ? this.ideas.map(idea => idea.toString) : [],
+        gifts: this.gifts ? this.gifts.map(gift => gift.toString()) : []
+    })
+}
+module.exports = userModel

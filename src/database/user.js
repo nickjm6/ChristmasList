@@ -4,7 +4,7 @@ const Idea = require("./idea")
 const Gift = require("./gift")
 
 let getUser = async (id) => {
-    await User.findById(id)
+    return await User.findById(id)
 }
 
 let addUser = async (req) => {

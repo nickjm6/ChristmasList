@@ -8,4 +8,14 @@ let recipientSchema = Schema({
     ideas: [Schema.Types.ObjectId]
 })
 
-module.exports = model("recipient", recipientSchema)
+let recipientModel = model("recipient", recipientSchema)
+recipientModel.prototype.toString = function(){
+    return JSON.stringify({
+        name: this.name,
+        priceLimit: this.priceLimit,
+        userId: this.userId,
+        gifts: this.gifts.map(gift => gift.toString()),
+        ideas: this.ideas.map(idea => idea.toString())
+    })
+}
+module.exports = recipientModel

@@ -12,10 +12,10 @@ let addIdea = async (req) => {
     if (!user)
         throw new Error(`A user was not found with the id: '${userId}'`)
     let newIdea = new Idea(req)
-    await newIdea.save()
-    await User.addIdea(userId, newIdea._id)
     if(recipientId)
         await Recipient.addIdea(recipientId, newIdea._id)
+    await User.addIdea(userId, newIdea._id)
+    await newIdea.save()
     return newIdea._id;
 }
 

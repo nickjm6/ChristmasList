@@ -11,7 +11,7 @@ let addRecipient = async (req) => {
     if(!user)
         throw new Error(`Failed to find user with the id: '${userId}'`)
     let newRecipient = new Recipient(req)
-    user.addRecipient(newRecipient._id)
+    User.addRecipient(userId, newRecipient._id)
     await newRecipient.save()
     return newRecipient._id;
 }
@@ -39,6 +39,8 @@ let removeByUser = async (userId) => {
 
 let addGift = async (id, giftId) => {
     let recipient = await getRecipient(id)
+    if(!recipient)
+        throw new Error(`Could not find recipient with id '${id}'`)
     let currentGifts = recipient.gifts;
     if(currentGifts.includes(giftId))
         throw new Error(`recipient ${recipient.name} already has gift with id '${giftId}'`)
@@ -57,6 +59,8 @@ let removeGift = async (id, giftId) => {
 
 let addIdea = async (id, ideaId) => {
     let recipient = await getRecipient(id)
+    if(!recipient)
+        throw new Error(`Could not find recipient with id '${id}'`)
     let currentIdeas = recipient.ideas;
     if(currentIdeas.includes(ideaId))
         throw new Error(`recipient ${recipient.name} already has gift with id '${ideaId}'`)

@@ -7,4 +7,13 @@ let giftSchema = Schema({
     userId: Schema.Types.ObjectId
 })
 
-module.exports = model("gift", giftSchema)
+let giftModel = model("gift", giftSchema)
+giftModel.prototype.toString = function() {
+    return JSON.stringify({
+        name: this.name,
+        price: this.price,
+        recipientId: this.recipientId,
+        userId: this.userId
+    })
+}
+module.exports = giftModel

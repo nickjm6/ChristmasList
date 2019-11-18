@@ -7,4 +7,13 @@ let ideaSchema = Schema({
     userId: Schema.Types.ObjectId
 })
 
-module.exports = model("idea", ideaSchema)
+let ideaModel = model("idea", ideaSchema)
+ideaModel.prototype.toString = function() {
+    return JSON.stringify({
+        name: this.name,
+        price: this.price,
+        recipientId: this.recipientId.toString(),
+        userId: this.userId.toString()
+    })
+}
+module.exports = ideaModel
