@@ -4,7 +4,7 @@ const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
 
 const fields = {
-    getUser: { id: "string" },
+    getUser: { id: "objectid" },
     getUserByUsername: { username: "string" },
     addUser: { username: "string" },
     removeUser: { username: "string" }

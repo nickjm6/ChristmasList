@@ -4,10 +4,10 @@ const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
 
 const fields = {
-    getIdea: {id: "string"},
-    addIdea: {name: "string", userId: "string"},
-    editIdea: {id: "string", values: "object"},
-    removeIdea: {id: "string"}
+    getIdea: {id: "objectid"},
+    addIdea: {name: "string", userId: "objectid"},
+    editIdea: {id: "objectid", values: "object"},
+    removeIdea: {id: "objectid"}
 }
 
 router.get("/", validate(fields.getIdea), (req, res) => {

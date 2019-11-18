@@ -27,3 +27,4 @@ app.use("/idea", require("./src/routes/idea"))
 app.use("/recipient", require("./src/routes/recipient"))
 
 app.listen(port, () => console.log(`app listening at http://localhost:${port}`))
+

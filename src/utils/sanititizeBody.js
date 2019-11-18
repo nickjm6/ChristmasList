@@ -1,3 +1,5 @@
+const ObjectId = require("mongoose").Types.ObjectId
+
 module.exports = (fields) => (req, res, next) => {
     let result = {}
     let values = req.body.values
@@ -11,7 +13,9 @@ module.exports = (fields) => (req, res, next) => {
         let type = fields[field]
         if(value === null || value === undefined)
             continue;
-        if(typeof value === type){
+        if(type == "object" && Array.isArray(value))
+            continue
+        if(typeof value === type || (type == "array" && Array.isArray(value))){
             result[field] = value;
             continue
         }
@@ -19,7 +23,15 @@ module.exports = (fields) => (req, res, next) => {
             value = Number(value)
             if(!isNaN(value))
                 result[field] = value
-        }
+        } else if(type == "objectid") {
+            if(value instanceof ObjectId){
+                result[field] = value
+            } else {
+                try{
+                    result[field] = ObjectId(value)
+                }catch(err){}
+            }
+        } 
     }
     req.body.values = result;
     next()

@@ -4,10 +4,10 @@ const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
 
 const fields = {
-    getRecipient: {id: "string"},
-    addRecipient: {name: "string", priceLimit: "number", userId: "string"},
-    editRecipient: {id: "string", values: "object"},
-    removeRecipient: {id: "string"}
+    getRecipient: {id: "objectid"},
+    addRecipient: {name: "string", priceLimit: "number", userId: "objectid"},
+    editRecipient: {id: "objectid", values: "object"},
+    removeRecipient: {id: "objectid"}
 }
 
 router.get("/", validate(fields.getRecipient), (req, res) => {

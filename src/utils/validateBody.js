@@ -1,3 +1,5 @@
+const ObjectId = require("mongoose").Types.ObjectId
+
 module.exports = (fields) => (req, res, next) => {
     let fieldList = Object.keys(fields)
     let body = req.method === "GET" ? req.query : req.body
@@ -16,6 +18,10 @@ module.exports = (fields) => (req, res, next) => {
         }
         if(type == "object" && Array.isArray(value)){
             errors.push(`Invalid type for field: ${field}. Expected 'object' but got 'array'`)
+            continue;
+        }
+        if(type == "objectid" && !(value instanceof ObjectId)){
+            errors.push(`Invalid type for field: ${field}. Expected 'objectid' but got ${typeof value}`)
             continue;
         }
         if(typeof value !== type){
