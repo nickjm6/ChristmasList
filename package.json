@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "build": "webpack --mode development",
-    "watch": "webpack --mode development --watch",
+    "watch": "webpack --watch",
     "start:dev": "concurrently \"nodemon app.js\" \"npm run watch\"",
     "test": "mocha ./test/*.test.js"
   },
@@ -37,8 +37,10 @@
   "devDependencies": {
     "@babel/cli": "^7.7.0",
     "@babel/core": "^7.7.2",
+    "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
+    "@babel/runtime": "^7.7.2",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
