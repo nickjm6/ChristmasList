@@ -8,9 +8,26 @@ let getUser = async (id) => {
 }
 
 let getUserByUsername = async (username) => {
-    return {
-        name: "nickjm6"
-    }
+    let user = await User.findOne({username})
+    if(!user)
+        return null
+    let recipients = user.recipients.map(async recipient => await Recipient.getRecipient(recipient))
+        .filter(recipient => recipient != null)
+        .map(recipient => {
+            recipient.gifts = recipient.gifts.map(async gift => await Gift.getGift(gift)).filter(gift => gift != null)
+            recipients.ideas = recipients.ideas.map(async idea => await Idea.getIdea(idea)).filter(idea => idea != null)
+        })
+    user.gifts = user.gifts.map(async gift => await Gift.getGift(gift)).filter(gift => {
+        if(gift == null)
+            return false;
+        return gift.recipientId == null
+    })
+    user.ideas = user.ideas.map(async idea => await Idea.getIdea(idea)).filter(idea => {
+        if(idea == null)
+            return false
+        return gift.recipientId == null
+    })
+    return user;
 }
 
 let addUser = async (req) => {
@@ -83,4 +100,4 @@ let removeRecipient = async (id, recipientId) => {
     await user.save()
 }
 
-module.exports = {getUser, addGift, removeGift, addIdea, removeIdea, addRecipient, removeRecipient, removeUser, addUser}
+module.exports = {getUser, getUserByUsername, addGift, removeGift, addIdea, removeIdea, addRecipient, removeRecipient, removeUser, addUser}

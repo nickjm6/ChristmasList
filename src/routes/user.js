@@ -13,7 +13,7 @@ const fields = {
 router.get("/byId", validate(fields.getUser), async (req, res) => {
     try {
         const id = req.query.id;
-        let user = User.getUser(id)
+        let user = await User.getUser(id)
         if (!user)
             res.status(400).json({ message: "No user was found with that id" })
         else
@@ -27,7 +27,7 @@ router.get("/byId", validate(fields.getUser), async (req, res) => {
 router.get("/byUsername", validate(fields.getUserByUsername), async (req, res) => {
     try {
         const username = req.query.username
-        let user = User.getUserByUsername(username)
+        let user = await User.getUserByUsername(username)
         if (!user)
             res.status(400).json({ message: "No user was found with that username" })
         else
