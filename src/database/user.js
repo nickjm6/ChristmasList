@@ -7,6 +7,12 @@ let getUser = async (id) => {
     return await User.findById(id)
 }
 
+let getUserByUsername = async (username) => {
+    return {
+        name: "nickjm6"
+    }
+}
+
 let addUser = async (req) => {
     let newUser = new User(req)
     await newUser.save()

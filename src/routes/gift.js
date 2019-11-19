@@ -2,39 +2,62 @@ const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
+const Gift = require("../database/gift")
 
 const fields = {
-    getGift: {id: "objectid"},
-    addGift: {name: "string", price: "number", recipientId: "objectid", userId: "objectid"},
-    editGift: {id: "objectid", values: "object"},
-    removeGift: {id: "objectid"}
+    getGift: { id: "objectid" },
+    addGift: { name: "string", price: "number", userId: "objectid" },
+    editGift: { id: "objectid", values: "object" },
+    removeGift: { id: "objectid" }
 }
 
-router.get("/", validate(fields.getGift), (req, res) => {
-    const id = req.query.id
-    let gift = {
-        name: "Football",
-        price: 12.99,
-        recipient: "Johnny",
-        username: "Nick"
+router.get("/", validate(fields.getGift), async (req, res) => {
+    try {
+        const id = req.query.id
+        let gift = await Gift.getGift(id)
+        if (!gift)
+            res.status(400).json({ message: "No gift was found with that id" })
+        else
+            res.json({ gift })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "An internal server error occured" })
     }
-    res.json({gift})
 });
 
-router.post("/", validate(fields.addGift), (req, res) => {
-    const {name, price, recipientId} = req.body;
-    const newGift = {name, price, recipientId, userId}
-    res.json({message: "success"})
+router.post("/", validate(fields.addGift), async (req, res) => {
+    try {
+        const { name, price, recipientId } = req.body;
+        const giftReq = { name, price, recipientId, userId }
+        let newGiftId = await Gift.newGift(giftReq);
+        res.json({ id: newGiftId })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "An internal server error occured" })
+    }
+
 })
 
-router.put("/", validate(fields.editGift), sanitize(fields.addGift), (req, res) => {
-    const {id, values} = req.body;
-    res.json({message: "success"})
+router.put("/", validate(fields.editGift), sanitize(fields.addGift), async (req, res) => {
+    try {
+        const { id, values } = req.body;
+        await Gift.editGift(id, values)
+        res.json({ message: "Successfully updated gift" })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "An internal server error occured" })
+    }
 })
 
-router.delete("/", validate(fields.removeGift), (req, res) => {
-    const id = req.body.id;
-    res.json({message: "success"})
+router.delete("/", validate(fields.removeGift), async (req, res) => {
+    try {
+        const id = req.body.id;
+        await Gift.removeGift(id)
+        res.json({ message: "Successfully deleted gift" })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "An internal server error occured" })
+    }
 })
 
 module.exports = router;
