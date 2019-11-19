@@ -1,3 +1,15 @@
 #root {
     text-align: center;
 }
+
+.myInput {
+    margin: 20px 0px;
+}
+
+#recipientList {
+    margin-top: 20px;
+}
+
+.recipient-row {
+    margin-bottom: 20px;
+}
