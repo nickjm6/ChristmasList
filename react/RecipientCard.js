@@ -11,8 +11,12 @@ const RecipientCard = (props) => {
             <CardHeader>{props.recipientName}</CardHeader>
             <CardBody>
                 <Row style={{marginBottom: "20px"}}>
-                    <Col md={{offset: 2, size: 4}}><AddGiftModal requestServer={props.requestServer} recipientId={props.recipientId}></AddGiftModal></Col>
-                    <Col md="4"><AddIdeaModal requestServer={props.requestServer} recipientId={props.recipientId}></AddIdeaModal></Col>
+                    <Col md={{offset: 2, size: 4}}>
+                        <AddGiftModal requestServer={props.requestServer} recipientId={props.recipientId} color="primary" />
+                    </Col>
+                    <Col md="4">
+                        <AddIdeaModal requestServer={props.requestServer} recipientId={props.recipientId} color="info" />
+                    </Col>
                 </Row>
                 {gifts.length > 0 ? <h3>Gifts:</h3> : null}
                 {gifts.map(gift => <Row id={gift._id}>

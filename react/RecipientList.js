@@ -16,7 +16,10 @@ class RecipientList extends Component {
         return (
             <Row className="recipient-row">
                 {arr.map(r => 
-                    <Col md="4"><RecipientCard requestServer={this.props.requestServer} key={r._id} recipientId={r._id} recipientName={r.name} gifts={[]} ideas={[]} /></Col>
+                    <Col md="4">
+                        <RecipientCard requestServer={this.props.requestServer} key={r._id} recipientId={r._id} 
+                        recipientName={r.name} gifts={r.gifts || []} ideas={r.ideas || []} />
+                    </Col>
                 )}
             </Row>
         )

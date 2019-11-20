@@ -7,7 +7,7 @@ import AddGiftModal from "./AddGiftModal"
 import AddIdeaModal from "./AddIdeaModal"
 import AddRecipientModal from "./AddRecipientModal"
 import RecipientList from "./RecipientList"
-import {Row, Col} from "reactstrap"
+import { Row, Col, Spinner } from "reactstrap"
 
 
 class App extends Component {
@@ -15,38 +15,28 @@ class App extends Component {
         super(props)
         this.state = {
             user: {},
-            recipients: [{
-                name: "Joe",
-                _id: "1234",
-                gifts: [],
-                ideas: []
-            },
-            {
-                name: "Chris",
-                _id: "4312",
-                gifts: [],
-                ideas: []
-            }]
+            loading: true
         }
 
         this.requestServer = this.requestServer.bind(this)
         this.addGift = this.addGift.bind(this)
         this.addIdea = this.addIdea.bind(this)
         this.addRecipient = this.addRecipient.bind(this)
+        this.getUserInfo = this.getUserInfo.bind(this)
     }
 
     async requestServer(endpoint, config) {
         try {
-            if(config != null){
-                if(config.addUserId === true){
+            if (config != null) {
+                if (config.addUserId === true) {
                     config.addUserId = undefined;
                     let jsonBody;
-                    try{
-                        if(config.body != null)
+                    try {
+                        if (config.body != null)
                             jsonBody = JSON.parse(config.body)
-                        else 
+                        else
                             jsonBody = {}
-                    }catch(err){
+                    } catch (err) {
                         jsonBody = {}
                     }
                     jsonBody.userId = this.state.user._id
@@ -71,14 +61,18 @@ class App extends Component {
         }
     }
 
-    async componentDidMount() {
+    async getUserInfo() {
         try {
             let res = await this.requestServer("/user/byUsername?username=nickjm6")
             let user = res.user
-            this.setState({ user })
+            this.setState({ user, loading: false })
         } catch (err) {
             console.error(err)
         }
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(this.getUserInfo, 500)
     }
 
     addGift(req) {
@@ -99,15 +93,28 @@ class App extends Component {
     render() {
         let user = this.state.user;
         let message = user.username ? `Welcome ${user.username}` : "Searching for user..."
+        let recipients = this.state.user.recipients || []
+        let disableButtons = Object.keys(user).length == 0
         return (
             <div>
                 <h1>{message}</h1><br />
                 <Row>
-                    <Col><AddGiftModal requestServer={this.requestServer} recipients={this.state.recipients} addGift={this.addGift}></AddGiftModal></Col>
-                    <Col><AddIdeaModal requestServer={this.requestServer} recipients={this.state.recipients} addIdea={this.addIdea}></AddIdeaModal></Col>
-                    <Col><AddRecipientModal requestServer={this.requestServer} addRecipient={this.addRecipient}></AddRecipientModal></Col>
+                    <Col md={{ offset: 3, size: 2 }}>
+                        <AddGiftModal requestServer={this.requestServer} recipients={recipients} addGift={this.addGift} 
+                        color="success" disabled={disableButtons} />
+                    </Col>
+                    <Col md="2">
+                        <AddIdeaModal requestServer={this.requestServer} recipients={recipients} addIdea={this.addIdea} 
+                        color="primary" disabled={disableButtons} />
+
+                    </Col>
+                    <Col md="2">
+                        <AddRecipientModal requestServer={this.requestServer} addRecipient={this.addRecipient} 
+                        color="info" disabled={disableButtons} />
+                    </Col>
                 </Row>
-                <RecipientList requestServer={this.requestServer} recipients={this.state.recipients}></RecipientList>
+                {this.state.loading ? <Spinner></Spinner> : 
+                <RecipientList requestServer={this.requestServer} recipients={recipients}></RecipientList>}
             </div>
         )
     }

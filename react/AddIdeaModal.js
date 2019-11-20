@@ -49,7 +49,7 @@ class addIdeaModal extends Component {
         let recipients = this.props.recipients || []
         return (
             <div>
-                <Button color="success" onClick={this.toggle}>Add Idea</Button>
+                <Button color={this.props.color || "info"} onClick={this.toggle}>Add Idea</Button>
                 <Modal isOpen={this.state.modal} toggle={this.toggle}>
                     <ModalHeader toggle={this.toggle}>Add Idea</ModalHeader>
                     <ModalBody>

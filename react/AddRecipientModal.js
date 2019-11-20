@@ -44,7 +44,7 @@ class addRecipientModal extends Component {
     render() {
         return (
             <div>
-                <Button color="success" onClick={this.toggle}>Add Recipient</Button>
+                <Button color={this.props.color || "info"} onClick={this.toggle}>Add Recipient</Button>
                 <Modal isOpen={this.state.modal} toggle={this.toggle}>
                     <ModalHeader toggle={this.toggle}>Add Recipient</ModalHeader>
                     <ModalBody>

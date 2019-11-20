@@ -49,7 +49,7 @@ class addGiftModal extends Component {
         let recipients = this.props.recipients || []
         return (
             <div>
-                <Button color="success" onClick={this.toggle}>Add Gift</Button>
+                <Button color={this.props.color || "info"} onClick={this.toggle}>Add Gift</Button>
                 <Modal isOpen={this.state.modal} toggle={this.toggle}>
                     <ModalHeader toggle={this.toggle}>Add Gift</ModalHeader>
                     <ModalBody>
