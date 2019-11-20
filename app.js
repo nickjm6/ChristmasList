@@ -10,6 +10,7 @@ if (!mongoAddress || typeof mongoAddress !== "string" || !/^mongodb:\/\/[a-zA-Z]
     throw new Error("please set a valid mongodb address in .env with the name MONGO_ADDR")
 
 mongoose.set("useUnifiedTopology", true)
+mongoose.set("useCreateIndex", true)
 mongoose.connect(mongoAddress, { useNewUrlParser: true })
 
 const port = process.env.PORT || 8080

@@ -2,19 +2,20 @@ const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
-const Gift = require("../database/gift")
+const {getGift, addGift, removeGift, editGift} = require("../database/databaseOperations").gift
 
 const fields = {
     getGift: { id: "objectid" },
     addGift: { name: "string", price: "number", userId: "objectid" },
     editGift: { id: "objectid", values: "object" },
+    editGiftValues: {name: "string", price: "number", recipientId: "objectId"},
     removeGift: { id: "objectid" }
 }
 
 router.get("/", validate(fields.getGift), async (req, res) => {
     try {
         const id = req.query.id
-        let gift = await Gift.getGift(id)
+        let gift = await getGift(id)
         if (!gift)
             res.status(400).json({ message: "No gift was found with that id" })
         else
@@ -27,9 +28,9 @@ router.get("/", validate(fields.getGift), async (req, res) => {
 
 router.post("/", validate(fields.addGift), async (req, res) => {
     try {
-        const { name, price, recipientId } = req.body;
+        const { name, price, recipientId, userId } = req.body;
         const giftReq = { name, price, recipientId, userId }
-        let newGiftId = await Gift.newGift(giftReq);
+        let newGiftId = await addGift(giftReq);
         res.json({ id: newGiftId })
     } catch (err) {
         console.error(err)
@@ -38,10 +39,10 @@ router.post("/", validate(fields.addGift), async (req, res) => {
 
 })
 
-router.put("/", validate(fields.editGift), sanitize(fields.addGift), async (req, res) => {
+router.put("/", validate(fields.editGift), sanitize(fields.editGiftValues), async (req, res) => {
     try {
         const { id, values } = req.body;
-        await Gift.editGift(id, values)
+        await editGift(id, values)
         res.json({ message: "Successfully updated gift" })
     } catch (err) {
         console.error(err);
@@ -52,7 +53,7 @@ router.put("/", validate(fields.editGift), sanitize(fields.addGift), async (req,
 router.delete("/", validate(fields.removeGift), async (req, res) => {
     try {
         const id = req.body.id;
-        await Gift.removeGift(id)
+        await removeGift(id)
         res.json({ message: "Successfully deleted gift" })
     } catch (err) {
         console.error(err)

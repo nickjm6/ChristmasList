@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
-const User = require("../database/user")
+const {getUser, getUserByUsername, addUser, removeUser} = require("../database/databaseOperations").user
 
 const fields = {
     getUser: { id: "objectid" },
@@ -13,7 +13,7 @@ const fields = {
 router.get("/byId", validate(fields.getUser), async (req, res) => {
     try {
         const id = req.query.id;
-        let user = await User.getUser(id)
+        let user = await getUser(id)
         if (!user)
             res.status(400).json({ message: "No user was found with that id" })
         else
@@ -27,7 +27,7 @@ router.get("/byId", validate(fields.getUser), async (req, res) => {
 router.get("/byUsername", validate(fields.getUserByUsername), async (req, res) => {
     try {
         const username = req.query.username
-        let user = await User.getUserByUsername(username)
+        let user = await getUserByUsername(username)
         if (!user)
             res.status(400).json({ message: "No user was found with that username" })
         else
@@ -42,7 +42,7 @@ router.post("/", validate(fields.addUser), async (req, res) => {
     try {
         const { username } = req.body;
         const userReq = { username }
-        let newUserId = await User.addUser(userReq);
+        let newUserId = await addUser(userReq);
         res.json({ id: newUserId })
     } catch (err) {
         console.error(err)
@@ -53,7 +53,7 @@ router.post("/", validate(fields.addUser), async (req, res) => {
 router.delete("/", validate(fields.removeUser), async (req, res) => {
     try {
         const id = req.body.id
-        await User.removeUser(id)
+        await removeUser(id)
         res.json({ message: "Successfully deleted user" })
     } catch (err) {
         console.error(err)
