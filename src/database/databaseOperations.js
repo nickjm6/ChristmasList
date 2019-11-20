@@ -74,7 +74,7 @@ let getRecipientListByUser = async (userId) => {
         recipient.gifts = await getGiftsByRecipient(recipient._id)
         recipient.ideas = await getIdeasByRecipient(recipient._id)
         let { _id, gifts, ideas, name, priceLimit } = recipient
-        recipient = { _id, gifts, ideas, name, priceLimit, userId }
+        recipient = { _id, gifts, ideas, name, priceLimit }
         res.push(recipient)
     }
     return res;
@@ -119,8 +119,8 @@ let removeGift = async (id) => {
 let getGiftsByRecipient = async (recipientId) => {
     let gifts = await Gift.find({ recipientId })
     return gifts.map(gift => {
-        let { _id, name, price, userId } = gift;
-        return { _id, name, price, userId, recipientId }
+        let { _id, name, price } = gift;
+        return { _id, name, price }
     })
 }
 
@@ -128,7 +128,7 @@ let getGiftsByUserNoRecipient = async (userId) => {
     let gifts = await Gift.find({ userId, recipientId: null })
     return gifts.map(gift => {
         let { _id, name, price } = gift;
-        return { _id, name, price, userId }
+        return { _id, name, price }
     })
 }
 
@@ -149,8 +149,8 @@ let getIdea = async (_id) => {
 let getIdeasByRecipient = async (recipientId) => {
     let ideas = await Idea.find({ recipientId })
     return ideas.map(idea => {
-        let { _id, name, price, userId } = idea;
-        return { _id, name, price, userId, recipientId }
+        let { _id, name, price } = idea;
+        return { _id, name, price }
     })
 }
 
@@ -158,7 +158,7 @@ let getIdeasByUserNoRecipient = async (userId) => {
     let ideas = await Idea.find({ userId, recipientId: null })
     return ideas.map(idea => {
         let { _id, name, price } = idea;
-        return { _id, name, price, userId }
+        return { _id, name, price }
     })
 }
 
