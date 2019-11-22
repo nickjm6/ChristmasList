@@ -13,3 +13,39 @@
 .recipient-row {
     margin-bottom: 20px;
 }
+
+.card-header {
+    background: green;
+}
+
+.card-body {
+    border-right: 2px solid green;
+    border-bottom: 2px solid green;
+    border-left: 2px solid green;
+}
+
+.modalSection {
+    margin-top: 20px;
+}
+
+.card-col {
+    height: 100%;
+}
+
+.badge {
+    white-space: normal;
+}
+
+.table {
+    background: lightgray;
+}
+
+.spinner-border {
+    margin-top: 20px;
+}
+
+.myTable {
+    text-align: center;
+    padding: 5px 20px;
+    margin-bottom: 20px;
+}

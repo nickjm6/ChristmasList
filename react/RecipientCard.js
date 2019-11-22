@@ -1,35 +1,45 @@
 import React from "react"
-import {Card, CardBody, CardHeader, Row, Col} from "reactstrap"
+import { Card, CardBody, CardHeader, Row, Col, Badge } from "reactstrap"
 import AddGiftModal from './AddGiftModal'
 import AddIdeaModal from './AddIdeaModal'
+import Table from "./MyTable"
+import MyTable from "./MyTable"
 
 const RecipientCard = (props) => {
-    let gifts = props.gifts || []
-    let ideas = props.ideas || []
+    let { recipient } = props
+    let gifts = recipient.gifts || []
+    let ideas = recipient.ideas || []
+    let total = gifts.map(gift => gift.price).reduce((a, b) => a + b, 0).toFixed(2)
+    let limit = recipient.priceLimit.toFixed(2)
+    let percentDiff = Math.abs(total - limit) / (limit * 1.0)
+    let color = percentDiff < .1 ? "success" : percentDiff < .15 ? "warning" : "danger"
     return (
-        <Card>
-            <CardHeader>{props.recipientName}</CardHeader>
+        <Card className="card-col">
+            <CardHeader>{recipient.name} (${limit})</CardHeader>
             <CardBody>
-                <Row style={{marginBottom: "20px"}}>
-                    <Col md={{offset: 2, size: 4}}>
-                        <AddGiftModal requestServer={props.requestServer} recipientId={props.recipientId} color="primary" />
+                <Row style={{ marginBottom: "20px" }}>
+                    <Col md={{ offset: 2, size: 4 }}>
+                        <AddGiftModal requestServer={props.requestServer} recipientId={recipient._id} color="success" />
                     </Col>
                     <Col md="4">
-                        <AddIdeaModal requestServer={props.requestServer} recipientId={props.recipientId} color="info" />
+                        <AddIdeaModal requestServer={props.requestServer} recipientId={recipient._id} color="danger" />
                     </Col>
                 </Row>
-                {gifts.length > 0 ? <h3>Gifts:</h3> : null}
-                {gifts.map(gift => <Row id={gift._id}>
-                    <Col><p>{gift.name}</p></Col>
-                    {gift.price ? <Col><p>${gift.price}</p></Col> : null}
-                </Row>)}
-                {ideas.length > 0 ? <h3>Ideas:</h3> : null}
-                {ideas.map(idea => <Row id={idea._id}>
-                    <Col><p>{idea.name}</p></Col>
-                    {idea.price ? <Col><p>${idea.price}</p></Col> : null}
-                </Row>)}
+                {gifts.length > 0 ?
+                    <MyTable content={gifts} contentType="Gift" title="Gifts" />
+                    : null}
+                {ideas.length > 0 ?
+                    <MyTable content={ideas} contentType="Idea" title="Ideas" />
+                    : null}
+                <Row>
+                    <Col md={{ offset: 2, size: 8 }}>
+                        <h2>
+                            <Badge color={color}>Total: ${total}</Badge>
+                        </h2>
+                    </Col>
+                </Row>
             </CardBody>
-        </Card>
+        </Card >
     )
 }
 

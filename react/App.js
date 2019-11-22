@@ -19,9 +19,6 @@ class App extends Component {
         }
 
         this.requestServer = this.requestServer.bind(this)
-        this.addGift = this.addGift.bind(this)
-        this.addIdea = this.addIdea.bind(this)
-        this.addRecipient = this.addRecipient.bind(this)
         this.getUserInfo = this.getUserInfo.bind(this)
     }
 
@@ -43,7 +40,6 @@ class App extends Component {
                     config.body = JSON.stringify(jsonBody)
                 }
             }
-            console.dir(config)
             let res = await fetch(endpoint, config)
             let jsonRes = await res.json()
             if (jsonRes == null)
@@ -75,46 +71,36 @@ class App extends Component {
         this.interval = setInterval(this.getUserInfo, 500)
     }
 
-    addGift(req) {
-        req.userId = this.state.user._id
-        console.dir(req)
-    }
-
-    addIdea(req) {
-        req.userId = this.state.user._id
-        console.dir(req)
-    }
-
-    addRecipient(req) {
-        req.userId = this.state.user._id
-        console.dir(req)
-    }
-
     render() {
         let user = this.state.user;
         let message = user.username ? `Welcome ${user.username}` : "Searching for user..."
-        let recipients = this.state.user.recipients || []
+        let recipients = user.recipients || []
         let disableButtons = Object.keys(user).length == 0
+        let totalSpent = recipients.map(recipient => {
+            let gifts = recipient.gifts || []
+            return gifts.map(gift => gift.price).reduce((a, b) => a + b, 0)
+        }).reduce((a,b)=>a+b,0).toFixed(2)
         return (
             <div>
                 <h1>{message}</h1><br />
-                <Row>
+                <h2>So far this Christmas, you have spent ${totalSpent}</h2>
+                <Row className="modalSection">
                     <Col md={{ offset: 3, size: 2 }}>
-                        <AddGiftModal requestServer={this.requestServer} recipients={recipients} addGift={this.addGift} 
-                        color="success" disabled={disableButtons} />
+                        <AddGiftModal requestServer={this.requestServer} recipients={recipients} addGift={this.addGift}
+                            color="success" disabled={disableButtons} />
                     </Col>
                     <Col md="2">
-                        <AddIdeaModal requestServer={this.requestServer} recipients={recipients} addIdea={this.addIdea} 
-                        color="primary" disabled={disableButtons} />
+                        <AddIdeaModal requestServer={this.requestServer} recipients={recipients} addIdea={this.addIdea}
+                            color="danger" disabled={disableButtons} />
 
                     </Col>
                     <Col md="2">
-                        <AddRecipientModal requestServer={this.requestServer} addRecipient={this.addRecipient} 
-                        color="info" disabled={disableButtons} />
+                        <AddRecipientModal requestServer={this.requestServer} addRecipient={this.addRecipient}
+                            color="success" disabled={disableButtons} />
                     </Col>
                 </Row>
-                {this.state.loading ? <Spinner></Spinner> : 
-                <RecipientList requestServer={this.requestServer} recipients={recipients}></RecipientList>}
+                {this.state.loading ? <Spinner></Spinner> :
+                    <RecipientList requestServer={this.requestServer} recipients={recipients}></RecipientList>}
             </div>
         )
     }

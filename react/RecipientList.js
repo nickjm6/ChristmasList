@@ -12,13 +12,12 @@ class RecipientList extends Component {
         this.renderRow = this.renderRow.bind(this)
     }
 
-    renderRow(arr){
+    renderRow(arr,i){
         return (
-            <Row className="recipient-row">
+            <Row key={i} className="recipient-row">
                 {arr.map(r => 
-                    <Col md="4">
-                        <RecipientCard requestServer={this.props.requestServer} key={r._id} recipientId={r._id} 
-                        recipientName={r.name} gifts={r.gifts || []} ideas={r.ideas || []} />
+                    <Col key={r._id} md="4">
+                        <RecipientCard requestServer={this.props.requestServer} recipient={r} />
                     </Col>
                 )}
             </Row>
@@ -34,7 +33,7 @@ class RecipientList extends Component {
             let arr = recipients.slice(start, end)
             rows.push(arr)
         }
-        return rows.map(row => this.renderRow(row))
+        return rows.map((row,i) => this.renderRow(row,i))
     }
 
     render(){
