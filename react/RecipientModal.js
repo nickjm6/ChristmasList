@@ -2,17 +2,12 @@ import React, { Component } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
 import Input from './Input'
 
-class addRecipientModal extends Component {
+class RecipientModal extends Component {
     constructor(props) {
         super(props);
-        this.state = { requestData: {}, modal: false }
-        this.toggle = this.toggle.bind(this)
+        this.state = { requestData: {}}
         this.onInputChange = this.onInputChange.bind(this)
-        this.addRecipient = this.addRecipient.bind(this)
-    }
-
-    toggle() {
-        this.setState({ modal: !this.state.modal })
+        this.addOrEditRecipient = this.addOrEditRecipient.bind(this)
     }
 
     onInputChange(event) {
@@ -28,32 +23,37 @@ class addRecipientModal extends Component {
     }
 
 
-    addRecipient() {
-        this.toggle()
+    addOrEditRecipient() {
+        this.props.toggle()
+        let method = this.props.type == "add" ? "POST" : "PUT"
+        let data = this.props.type == "add" ? this.state.requestData : {
+            values: this.state.requestData,
+            id: this.props.recipientId
+        }
         let config = {
-            method: "POST",
+            method,
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(this.state.requestData),
-            addUserId: true
+            body: JSON.stringify(data),
+            addUserId: this.props.type == "add"
         }
         this.props.requestServer("/recipient", config)
     }
 
     render() {
+        let title = this.props.type == "add" ? "Add Recipient" : "Edit Recipient"
         return (
             <div>
-                <Button color={this.props.color || "info"} onClick={this.toggle}>Add Recipient</Button>
-                <Modal isOpen={this.state.modal} toggle={this.toggle}>
-                    <ModalHeader toggle={this.toggle}>Add Recipient</ModalHeader>
+                <Modal isOpen={this.props.show} toggle={this.props.toggle}>
+                    <ModalHeader toggle={this.props.toggle}>Edit Recipient</ModalHeader>
                     <ModalBody>
                         <Input type="text" label="Name of recipient" name="name" onChange={this.onInputChange} />
                         <Input type="number" label="Price limit of recipient" name="priceLimit" onChange={this.onInputChange} />
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="danger" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.addRecipient}>Submit</Button>
+                        <Button color="danger" onClick={this.props.toggle}>Cancel</Button>
+                        <Button color="primary" onClick={this.addOrEditRecipient}>Submit</Button>
                     </ModalFooter>
                 </Modal>
             </div>
@@ -61,4 +61,4 @@ class addRecipientModal extends Component {
     }
 }
 
-export default addRecipientModal
+export default RecipientModal

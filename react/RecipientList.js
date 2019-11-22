@@ -16,7 +16,7 @@ class RecipientList extends Component {
         return (
             <Row key={i} className="recipient-row">
                 {arr.map(r => 
-                    <Col key={r._id} md="4">
+                    <Col key={r._id} md="6" className="col-card">
                         <RecipientCard requestServer={this.props.requestServer} recipient={r} />
                     </Col>
                 )}
@@ -25,11 +25,11 @@ class RecipientList extends Component {
     }
 
     renderRecipients(recipients){
-        let numRows = Math.ceil(recipients.length / 3.0)
+        let numRows = Math.ceil(recipients.length / 2.0)
         let rows = []
         for(let i = 0; i < numRows; i++){
-            let start = i*3
-            let end = Math.min(start+3, recipients.length)
+            let start = i*2
+            let end = Math.min(start+2, recipients.length)
             let arr = recipients.slice(start, end)
             rows.push(arr)
         }

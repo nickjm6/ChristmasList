@@ -2,17 +2,12 @@ import React, { Component } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
 import Input from './Input'
 
-class addIdeaModal extends Component {
+class IdeaModal extends Component {
     constructor(props) {
         super(props);
-        this.state = { requestData: {}, modal: false }
-        this.toggle = this.toggle.bind(this)
+        this.state = { requestData: {} }
         this.onInputChange = this.onInputChange.bind(this)
-        this.addIdea = this.addIdea.bind(this)
-    }
-
-    toggle() {
-        this.setState({ modal: !this.state.modal })
+        this.addOrEditIdea = this.addOrEditIdea.bind(this)
     }
 
     onInputChange(event) {
@@ -32,14 +27,19 @@ class addIdeaModal extends Component {
             this.setState({ requestData: { recipientId: this.props.recipientId } })
     }
 
-    addIdea() {
-        this.toggle()
+    addOrEditIdea() {
+        this.props.toggle()
+        let method = this.props.type == "add" ? "POST" : "PUT"
+        let data = this.props.type == "add" ? this.state.requestData : {
+            values: this.state.requestData,
+            id: this.props.ideaId
+        }
         let config = {
-            method: "POST",
+            method,
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(this.state.requestData),
+            body: JSON.stringify(data),
             addUserId: true
         }
         this.props.requestServer("/idea", config)
@@ -47,11 +47,11 @@ class addIdeaModal extends Component {
 
     render() {
         let recipients = this.props.recipients || []
+        let title = this.props.type == "add" ? "Add Idea" : "Edit Idea"
         return (
             <div>
-                <Button color={this.props.color || "info"} onClick={this.toggle}>Add Idea</Button>
-                <Modal isOpen={this.state.modal} toggle={this.toggle}>
-                    <ModalHeader toggle={this.toggle}>Add Idea</ModalHeader>
+                <Modal isOpen={this.props.show} toggle={this.props.toggle}>
+                    <ModalHeader toggle={this.props.toggle}>{title}</ModalHeader>
                     <ModalBody>
                         <Input type="text" label="Name of idea" name="name" onChange={this.onInputChange} />
                         <Input type="number" label="Price of idea (optional)" name="price" onChange={this.onInputChange} />
@@ -64,8 +64,8 @@ class addIdeaModal extends Component {
                         }
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="danger" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.addIdea}>Submit</Button>
+                        <Button color="danger" onClick={this.props.toggle}>Cancel</Button>
+                        <Button color="primary" onClick={this.addOrEditIdea}>Submit</Button>
                     </ModalFooter>
                 </Modal>
             </div>
@@ -73,4 +73,4 @@ class addIdeaModal extends Component {
     }
 }
 
-export default addIdeaModal
+export default IdeaModal

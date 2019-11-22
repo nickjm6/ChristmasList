@@ -11,6 +11,7 @@ if (!mongoAddress || typeof mongoAddress !== "string" || !/^mongodb:\/\/[a-zA-Z]
 
 mongoose.set("useUnifiedTopology", true)
 mongoose.set("useCreateIndex", true)
+mongoose.set("useFindAndModify", false)
 mongoose.connect(mongoAddress, { useNewUrlParser: true })
 
 const port = process.env.PORT || 8080

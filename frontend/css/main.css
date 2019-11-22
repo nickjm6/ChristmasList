@@ -14,16 +14,6 @@
     margin-bottom: 20px;
 }
 
-.card-header {
-    background: green;
-}
-
-.card-body {
-    border-right: 2px solid green;
-    border-bottom: 2px solid green;
-    border-left: 2px solid green;
-}
-
 .modalSection {
     margin-top: 20px;
 }
@@ -37,7 +27,7 @@
 }
 
 .table {
-    background: lightgray;
+    background: white;
 }
 
 .spinner-border {
@@ -48,4 +38,21 @@
     text-align: center;
     padding: 5px 20px;
     margin-bottom: 20px;
+}
+
+.icon {
+    margin: 0px 5px 0px 10px;
+    cursor: pointer;
+}
+
+.col-card {
+    margin-bottom: 20px;
+}
+
+.modal-button {
+    margin-bottom: 20px;
+}
+
+.header-icon {
+    float: right;
 }

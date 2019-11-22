@@ -3,11 +3,11 @@ import ReactDOM from "react-dom"
 
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
 import "../frontend/css/main.css"
-import AddGiftModal from "./AddGiftModal"
-import AddIdeaModal from "./AddIdeaModal"
-import AddRecipientModal from "./AddRecipientModal"
+import GiftModal from "./GiftModal"
+import IdeaModal from "./IdeaModal"
+import RecipientModal from "./RecipientModal"
 import RecipientList from "./RecipientList"
-import { Row, Col, Spinner } from "reactstrap"
+import { Row, Col, Spinner, Button } from "reactstrap"
 
 
 class App extends Component {
@@ -15,11 +15,15 @@ class App extends Component {
         super(props)
         this.state = {
             user: {},
-            loading: true
+            loading: true,
+            showRecipientModal: false,
+            showIdeaModal: false,
+            showGiftModal: false,
         }
 
         this.requestServer = this.requestServer.bind(this)
         this.getUserInfo = this.getUserInfo.bind(this)
+        this.toggle = this.toggle.bind(this)
     }
 
     async requestServer(endpoint, config) {
@@ -71,6 +75,19 @@ class App extends Component {
         this.interval = setInterval(this.getUserInfo, 500)
     }
 
+    toggle(modalType) {
+         switch(modalType){
+             case "gift":
+                this.setState({showGiftModal: !this.state.showGiftModal})
+                break;
+            case "idea":
+                this.setState({showIdeaModal: !this.state.showIdeaModal})
+                break;
+            case "recipient":
+                this.setState({showRecipientModal: !this.state.showRecipientModal})
+         }
+    }
+
     render() {
         let user = this.state.user;
         let message = user.username ? `Welcome ${user.username}` : "Searching for user..."
@@ -82,21 +99,23 @@ class App extends Component {
         }).reduce((a,b)=>a+b,0).toFixed(2)
         return (
             <div>
+                <GiftModal requestServer={this.requestServer} recipients={recipients} type="add" disabled={disableButtons}
+                    toggle={() => this.toggle("gift")} show={this.state.showGiftModal} />
+                <IdeaModal requestServer={this.requestServer} recipients={recipients} type="add" disabled={disableButtons}
+                    toggle={() => this.toggle("idea")} show={this.state.showIdeaModal} />
+                <RecipientModal requestServer={this.requestServer} type="add" disabled={disableButtons} 
+                    toggle={() => this.toggle("recipient")} show={this.state.showRecipientModal} />
                 <h1>{message}</h1><br />
                 <h2>So far this Christmas, you have spent ${totalSpent}</h2>
                 <Row className="modalSection">
-                    <Col md={{ offset: 3, size: 2 }}>
-                        <AddGiftModal requestServer={this.requestServer} recipients={recipients} addGift={this.addGift}
-                            color="success" disabled={disableButtons} />
+                    <Col className="modal-button" md={{ offset: 3, size: 2 }}>
+                        <Button color="success" onClick={() => this.toggle("gift")}>Add Gift</Button>
                     </Col>
-                    <Col md="2">
-                        <AddIdeaModal requestServer={this.requestServer} recipients={recipients} addIdea={this.addIdea}
-                            color="danger" disabled={disableButtons} />
-
+                    <Col className="modal-button" md="2">
+                        <Button color="danger" onClick={() => this.toggle("idea")}>AddIdea</Button>
                     </Col>
-                    <Col md="2">
-                        <AddRecipientModal requestServer={this.requestServer} addRecipient={this.addRecipient}
-                            color="success" disabled={disableButtons} />
+                    <Col className="modal-button" md="2">
+                        <Button color="success" onClick={() => this.toggle("recipient")}>Add Recipient</Button>
                     </Col>
                 </Row>
                 {this.state.loading ? <Spinner></Spinner> :
