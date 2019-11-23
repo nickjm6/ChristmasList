@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
-const {getIdea, addIdea, removeIdea, editIdea} = require("../database/databaseOperations").idea
+const {getIdea, addIdea, removeIdea, editIdea, ideaToGift} = require("../database/databaseOperations").idea
 
 const fields = {
     getIdea: { id: "objectid" },
@@ -35,6 +35,17 @@ router.post("/", validate(fields.addIdea), async (req, res) => {
     } catch (err) {
         console.error(err)
         res.status(500).json({ message: "An internal server error occured" })
+    }
+})
+
+router.post("/makeGift", validate(fields.removeIdea), async (req, res) => {
+    try {
+        const {id} = req.body
+        await ideaToGift(id)
+        res.json({message: "Successfully turned idea into gift!"})
+    } catch(err){
+        console.error(err)
+        res.status(500).json({message: "An internal server error occured"})
     }
 })
 

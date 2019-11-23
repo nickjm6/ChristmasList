@@ -167,14 +167,27 @@ let addIdea = async (req) => {
     let user = await getUser(userId)
     if (!user)
         throw new Error(`A user was not found with the id: '${userId}'`)
-    if(recipientId != null){
+    if (recipientId != null) {
         let recipient = await getRecipient(recipientId)
-        if(recipient == null)
+        if (recipient == null)
             throw new Error(`A recipient was not found with the id: '${recipientId}'`)
     }
     let newIdea = new Idea(req)
     await newIdea.save()
     return newIdea._id;
+}
+
+let ideaToGift = async (ideaId) => {
+    const idea = await Idea.findById(ideaId)
+    if (!idea)
+        throw new Error(`An idea was not found with the id: '${ideaId}`)
+    const newGift = new Gift({
+        name: idea.name,
+        price: idea.price,
+        recipientId: idea.recipientId
+    })
+    await removeIdea(ideaId)
+    await newGift.save()
 }
 
 let editIdea = async (id, req) => {
@@ -200,6 +213,6 @@ module.exports = {
     user: { getUser, getUserByUsername, addUser, removeUser },
     recipient: { getRecipient, addRecipient, editRecipient, removeRecipient },
     gift: { getGift, addGift, editGift, removeGift },
-    idea: { getIdea, addIdea, editIdea, removeIdea }
+    idea: { getIdea, addIdea, editIdea, removeIdea, ideaToGift }
 }
 
