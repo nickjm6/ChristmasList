@@ -47,8 +47,11 @@ router.post("/", validate(fields.addUser), async (req, res) => {
         let newUserId = await addUser(userReq);
         res.json({ id: newUserId })
     } catch (err) {
-        console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "MongoError" && err.code == 11000) {
+            res.status(400).json({ message: "Username already exists!" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
