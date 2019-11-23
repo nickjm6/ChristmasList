@@ -2,13 +2,13 @@ const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
-const {getIdea, addIdea, removeIdea, editIdea, ideaToGift} = require("../database/databaseOperations").idea
+const { getIdea, addIdea, removeIdea, editIdea, ideaToGift } = require("../database/databaseOperations").idea
 
 const fields = {
     getIdea: { id: "objectid" },
     addIdea: { name: "string", userId: "objectid" },
     editIdea: { id: "objectid", values: "object" },
-    editIdeaValues: {price: "number", recipientId: "objectid", name: "string"},
+    editIdeaValues: { price: "number", recipientId: "objectid", name: "string" },
     removeIdea: { id: "objectid" }
 }
 
@@ -34,18 +34,31 @@ router.post("/", validate(fields.addIdea), async (req, res) => {
         res.json({ id: newIdeaId })
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: `Could not find ${err.item} that you are trying to reference when creating idea` })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
 router.post("/makeGift", validate(fields.editIdea), sanitize(fields.editIdeaValues), async (req, res) => {
     try {
-        const {id, values} = req.body
+        const { id, values } = req.body
         await ideaToGift(id, values)
-        res.json({message: "Successfully turned idea into gift!"})
-    } catch(err){
+        res.json({ message: "Successfully turned idea into gift!" })
+    } catch (err) {
         console.error(err)
-        res.status(500).json({message: "An internal server error occured"})
+        switch (err.name) {
+            case "NotFoundError":
+                res.status(400).json({ message: `Failed to find the idea that you are trying to make a gift` })
+                break;
+            case "InvalidRequestError":
+                res.status(400).json({ message: err.message })
+                break;
+            default:
+                res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
@@ -56,7 +69,11 @@ router.put("/", validate(fields.editIdea), sanitize(fields.editIdeaValues), asyn
         res.json({ message: "Successfully edited idea" })
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: "Failed to find the idea that you are trying to edit" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
@@ -67,7 +84,11 @@ router.delete("/", validate(fields.removeIdea), async (req, res) => {
         res.json({ message: "Successfully deleted idea" })
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: "Failed to find the idea that you are trying to delete" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 

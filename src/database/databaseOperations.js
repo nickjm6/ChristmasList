@@ -2,6 +2,7 @@ const User = require("../models/user")
 const Gift = require("../models/gift")
 const Idea = require("../models/idea")
 const Recipient = require("../models/recipient")
+const {NotFoundError, InvalidRequestError} = require("../errors")
 
 //USER
 
@@ -35,7 +36,7 @@ let addUser = async (req) => {
 let removeUser = async (id) => {
     let user = await getUser(id)
     if (!user)
-        throw new Error(`Could not find a user with the id '${id}`)
+        throw new NotFoundError("user", `Could not find a user with the id: '${id}'`)
     await removeRecipientByUser(id)
     await removeIdeaByUser(id)
     await removeGiftByUser(id)
@@ -52,20 +53,23 @@ let addRecipient = async (req) => {
     let userId = req.userId;
     let user = await getUser(userId)
     if (!user)
-        throw new Error(`Failed to find user with the id: '${userId}'`)
+        throw new NotFoundError("user", `Failed to find user with the id: '${userId}'`)
     let newRecipient = new Recipient(req)
     await newRecipient.save()
     return newRecipient._id;
 };
 
 let editRecipient = async (id, req) => {
+    let recipient = await getRecipient(id)
+    if(!recipient)
+        throw new NotFoundError("recipient", `Failed to find recipient with the id: '${id}'`)
     await Recipient.findByIdAndUpdate(id, req)
 }
 
 let removeRecipient = async (id) => {
     let recipient = await getRecipient(id)
     if (!recipient)
-        throw new Error(`Could not find a recipient with the id '${id}'`)
+        throw new NotFoundError("recipient", `Could not find a recipient with the id: '${id}'`)
     removeRecipientFromGifts(id)
     removeRecipientFromIdeas(id)
     await Recipient.findByIdAndDelete(id)
@@ -99,11 +103,11 @@ let addGift = async (req) => {
     const { userId, recipientId } = req;
     let user = await getUser(userId)
     if (!user)
-        throw new Error(`A user was not found with the id: '${userId}'`)
+        throw new NotFoundError("user", `A user was not found with the id: '${userId}'`)
     if (recipientId != null) {
         let recipient = await getRecipient(recipientId)
         if (recipient == null)
-            throw new Error(`A recipient was not found with the id: '${recipientId}'`)
+            throw new NotFoundError("recipient", `A recipient was not found with the id: '${recipientId}'`)
     }
     let newGift = new Gift(req)
     await newGift.save()
@@ -111,13 +115,16 @@ let addGift = async (req) => {
 }
 
 let editGift = async (id, req) => {
+    let gift = await getGift(id)
+    if(!gift)
+        throw new NotFoundError("gift", `A gift was not found with the id: '${id}'`)
     await Gift.findByIdAndUpdate(id, req)
 }
 
 let removeGift = async (id) => {
     let gift = await getGift(id)
     if (!gift)
-        throw new Error(`Could not find a gift with the id '${id}'`)
+        throw new NotFoundError("gift", `Could not find a gift with the id: '${id}'`)
     await Gift.findByIdAndDelete(id)
 }
 
@@ -171,11 +178,11 @@ let addIdea = async (req) => {
     const { userId, recipientId } = req;
     let user = await getUser(userId)
     if (!user)
-        throw new Error(`A user was not found with the id: '${userId}'`)
+        throw new NotFoundError("user", `A user was not found with the id: '${userId}'`)
     if (recipientId != null) {
         let recipient = await getRecipient(recipientId)
         if (recipient == null)
-            throw new Error(`A recipient was not found with the id: '${recipientId}'`)
+            throw new NotFoundError("recipient", `A recipient was not found with the id: '${recipientId}'`)
     }
     let newIdea = new Idea(req)
     await newIdea.save()
@@ -185,10 +192,10 @@ let addIdea = async (req) => {
 let ideaToGift = async (ideaId, values) => {
     const idea = await Idea.findById(ideaId)
     if (!idea)
-        throw new Error(`An idea was not found with the id: '${ideaId}`)
+        throw new NotFoundError("idea", `An idea was not found with the id: '${ideaId}'`)
     let price = values.price || idea.price
     if(!price){
-        throw new Error("Price is required")
+        throw new InvalidRequestError("Price is required for a gift!")
     }
     const newGift = new Gift({
         name: values.name || idea.name,
@@ -200,13 +207,16 @@ let ideaToGift = async (ideaId, values) => {
 }
 
 let editIdea = async (id, req) => {
+    let idea = await getIdea(id)
+    if(!idea)
+        throw new NotFoundError("idea", `Failed to find an idea with the id: '${id}'`)
     await Idea.findByIdAndUpdate(id, req)
 }
 
 let removeIdea = async (id) => {
     let idea = await getIdea(id)
     if (!idea)
-        throw new Error(`Could not find an idea with the id: '${id}'`)
+        throw new NotFoundError("idea", `Could not find an idea with the id: '${id}'`)
     await Idea.findByIdAndDelete(id)
 }
 

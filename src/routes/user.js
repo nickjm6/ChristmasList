@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
-const {getUser, getUserByUsername, addUser, removeUser} = require("../database/databaseOperations").user
+const { getUser, getUserByUsername, addUser, removeUser } = require("../database/databaseOperations").user
 
 const fields = {
     getUser: { id: "objectid" },
@@ -59,7 +59,11 @@ router.delete("/", validate(fields.removeUser), async (req, res) => {
         res.json({ message: "Successfully deleted user" })
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: "The user you are trying to delete was not found" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 

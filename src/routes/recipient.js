@@ -2,13 +2,13 @@ const express = require("express")
 const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
-const {getRecipient, addRecipient, removeRecipient, editRecipient} = require("../database/databaseOperations").recipient
+const { getRecipient, addRecipient, removeRecipient, editRecipient } = require("../database/databaseOperations").recipient
 
 const fields = {
     getRecipient: { id: "objectid" },
     addRecipient: { name: "string", priceLimit: "number", userId: "objectid" },
     editRecipient: { id: "objectid", values: "object" },
-    editRecipientValues: {name: "string", priceLimit: "number"},
+    editRecipientValues: { name: "string", priceLimit: "number" },
     removeRecipient: { id: "objectid" }
 }
 
@@ -34,7 +34,11 @@ router.post("/", validate(fields.addRecipient), async (req, res) => {
         res.json({ id: newRecipientId })
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: "The user you are trying to add a recipient to was not found" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
@@ -45,7 +49,11 @@ router.put("/", validate(fields.editRecipient), sanitize(fields.editRecipientVal
         res.json({ message: "Successfully edited recipient" })
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: "The recipient you are trying to edit was not found" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
@@ -56,7 +64,11 @@ router.delete("/", validate(fields.removeRecipient), async (req, res) => {
         res.json({ message: "Successfully deleted recipient" })
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "An internal server error occured" })
+        if (err.name == "NotFoundError") {
+            res.status(400).json({ message: "The recipient you are trying to delete was not found" })
+        } else {
+            res.status(500).json({ message: "An internal server error occured" })
+        }
     }
 })
 
