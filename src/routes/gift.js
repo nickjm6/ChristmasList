@@ -8,7 +8,7 @@ const fields = {
     getGift: { id: "objectid" },
     addGift: { name: "string", price: "number", userId: "objectid" },
     editGift: { id: "objectid", values: "object" },
-    editGiftValues: {name: "string", price: "number", recipientId: "objectId"},
+    editGiftValues: {name: "string", price: "number", recipientId: "objectid"},
     removeGift: { id: "objectid" }
 }
 

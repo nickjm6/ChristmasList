@@ -8,7 +8,7 @@ let MyInput = (props) => {
             <InputGroupAddon addonType="prepend">
                 <InputGroupText>{props.label}</InputGroupText>
             </InputGroupAddon>
-            <Input type={props.type} name={props.name} id={props.id} className={props.className} onChange={props.onChange}>{props.children}</Input>
+            <Input type={props.type} name={props.name} id={props.id} value={props.value} className={props.className} onChange={props.onChange}>{props.children}</Input>
         </InputGroup>
     )
 }

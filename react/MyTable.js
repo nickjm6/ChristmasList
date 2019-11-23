@@ -35,10 +35,10 @@ const MyTable = (props) => {
                             </td>
                             <td>
                                 <Icon icon={bin} className="icon" 
-                                onClick={() => props.toggle("confirmation", props.type, {id: row._id, title:`Delete ${contentHeader}`})} />
+                                onClick={() => props.toggle("confirmation", props.type, {values: row, title:`Delete ${contentHeader}`})} />
                                 <Icon icon={edit} className="icon" 
-                                onClick={() => props.toggle(props.type, "edit", {id: row._id})} />
-                                {isIdea ? <Icon icon={gift} className="icon" /> : null}
+                                onClick={() => props.toggle(props.type, "edit", {values: row})} />
+                                {isIdea ? <Icon icon={gift} className="icon" onClick={() => props.toggle("idea", "toGift", {values: row})} /> : null}
                             </td>
                         </tr>
                     )}

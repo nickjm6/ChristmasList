@@ -112,7 +112,7 @@ class App extends Component {
                         <Button color="success" onClick={() => this.toggle("gift")}>Add Gift</Button>
                     </Col>
                     <Col className="modal-button" md="2">
-                        <Button color="danger" onClick={() => this.toggle("idea")}>AddIdea</Button>
+                        <Button color="danger" onClick={() => this.toggle("idea")}>Add Idea</Button>
                     </Col>
                     <Col className="modal-button" md="2">
                         <Button color="success" onClick={() => this.toggle("recipient")}>Add Recipient</Button>

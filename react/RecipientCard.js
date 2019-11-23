@@ -26,19 +26,21 @@ class RecipientCard extends Component {
     }
 
     toggle(modal, type, opts={}) {
-        let {id,title} = opts
+        let {values,title} = opts
+        values = values || {}
+        values.recipientId = this.props.recipient._id
         switch (modal) {
             case "gift":
-                this.setState({ giftModalType: type, showGiftModal: !this.state.showGiftModal, giftId: id })
+                this.setState({ giftModalType: type, showGiftModal: !this.state.showGiftModal, giftValues: values })
                 break;
             case "idea":
-                this.setState({ ideaModalType: type, showIdeaModal: !this.state.showIdeaModal, ideaId: id })
+                this.setState({ ideaModalType: type, showIdeaModal: !this.state.showIdeaModal, ideaValues: values })
                 break;
             case "recipient":
                 this.setState({ showRecipientModal: !this.state.showRecipientModal })
                 break;
             case "confirmation":
-                let deleteFunction = () => {this.delete(type, id)}
+                let deleteFunction = () => {this.delete(type, values._id)}
                 this.setState({showConfirmationModal: !this.state.showConfirmationModal, deleteTitle: title, deleteFunction})
         }
     }
@@ -83,11 +85,11 @@ class RecipientCard extends Component {
         let color = percentDiff < .1 ? "success" : percentDiff < .15 ? "warning" : "danger"
         return (
             <Card className="card-col">
-                <GiftModal requestServer={this.props.requestServer} recipientId={recipient._id} type={this.state.giftModalType} 
-                    giftId={this.state.giftId} show={this.state.showGiftModal} toggle={() => this.dismiss("gift")} />
-                <IdeaModal requestServer={this.props.requestServer} recipientId={recipient._id} type={this.state.ideaModalType}
-                    ideaId={this.state.ideaId} show={this.state.showIdeaModal} toggle={() => this.dismiss("idea")} />
-                <RecipientModal requestServer={this.props.requestServer} recipientId={recipient._id} type="edit" 
+                <GiftModal requestServer={this.props.requestServer} type={this.state.giftModalType} values={this.state.giftValues} 
+                    show={this.state.showGiftModal} toggle={() => this.dismiss("gift")} recipients={this.props.recipients} />
+                <IdeaModal requestServer={this.props.requestServer} type={this.state.ideaModalType} values={this.state.ideaValues} 
+                    show={this.state.showIdeaModal} toggle={() => this.dismiss("idea")} recipients={this.props.recipients} />
+                <RecipientModal requestServer={this.props.requestServer} values={recipient} type="edit" 
                     show={this.state.showRecipientModal} toggle={() => this.dismiss("recipient")} />
                 <ConfirmationModal toggle={() => this.dismiss("confirmation")} show={this.state.showConfirmationModal} 
                     confirm={this.state.deleteFunction} title={this.state.deleteTitle} />

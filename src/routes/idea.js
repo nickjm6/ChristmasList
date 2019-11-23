@@ -8,7 +8,7 @@ const fields = {
     getIdea: { id: "objectid" },
     addIdea: { name: "string", userId: "objectid" },
     editIdea: { id: "objectid", values: "object" },
-    editIdeaValues: {price: "number", recipientId: "objectId", "name": "string"},
+    editIdeaValues: {price: "number", recipientId: "objectid", name: "string"},
     removeIdea: { id: "objectid" }
 }
 
@@ -38,10 +38,10 @@ router.post("/", validate(fields.addIdea), async (req, res) => {
     }
 })
 
-router.post("/makeGift", validate(fields.removeIdea), async (req, res) => {
+router.post("/makeGift", validate(fields.editIdea), sanitize(fields.editIdeaValues), async (req, res) => {
     try {
-        const {id} = req.body
-        await ideaToGift(id)
+        const {id, values} = req.body
+        await ideaToGift(id, values)
         res.json({message: "Successfully turned idea into gift!"})
     } catch(err){
         console.error(err)

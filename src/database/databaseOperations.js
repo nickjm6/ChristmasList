@@ -177,13 +177,17 @@ let addIdea = async (req) => {
     return newIdea._id;
 }
 
-let ideaToGift = async (ideaId) => {
+let ideaToGift = async (ideaId, values) => {
     const idea = await Idea.findById(ideaId)
     if (!idea)
         throw new Error(`An idea was not found with the id: '${ideaId}`)
+    let price = values.price || idea.price
+    if(!price){
+        throw new Error("Price is required")
+    }
     const newGift = new Gift({
-        name: idea.name,
-        price: idea.price,
+        name: values.name || idea.name,
+        price,
         recipientId: idea.recipientId
     })
     await removeIdea(ideaId)

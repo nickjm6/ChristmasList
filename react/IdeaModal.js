@@ -22,46 +22,56 @@ class IdeaModal extends Component {
         this.setState({ requestData })
     }
 
-    componentDidMount() {
-        if (this.props.recipientId)
-            this.setState({ requestData: { recipientId: this.props.recipientId } })
+    componentDidUpdate(){
+        if(this.props.show && !this.state.previouslyShowing){
+            let requestData = this.props.values || {}
+            let id = requestData._id
+            requestData._id = undefined
+            this.setState({requestData, previouslyShowing: true, id})
+        } else if(!this.props.show && this.state.previouslyShowing){
+            this.setState({previouslyShowing: false})
+        }
     }
+
 
     addOrEditIdea() {
         this.props.toggle()
-        let method = this.props.type == "add" ? "POST" : "PUT"
+        let method = this.props.type == "add" || this.props.type == "toGift" ? "POST" : "PUT"
         let data = this.props.type == "add" ? this.state.requestData : {
             values: this.state.requestData,
-            id: this.props.ideaId
+            id: this.state.id
         }
+        let endpoint = this.props.type == "toGift" ? "/idea/makeGift" : "/idea"
         let config = {
             method,
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
-            addUserId: true
+            addUserId: this.props.type == "add"
         }
-        this.props.requestServer("/idea", config)
+        this.props.requestServer(endpoint, config)
     }
 
     render() {
         let recipients = this.props.recipients || []
-        let title = this.props.type == "add" ? "Add Idea" : "Edit Idea"
+        let title = this.props.type == "add" ? "Add Idea" : this.props.type == "edit" ? "Edit Idea" : "Turn gift into idea"
+        let priceLabel = this.props.type == "toGift" ? "Price" : "Price (Optional)"
+        let {name, price, recipientId} = this.state.requestData
         return (
             <div>
                 <Modal isOpen={this.props.show} toggle={this.props.toggle}>
                     <ModalHeader toggle={this.props.toggle}>{title}</ModalHeader>
                     <ModalBody>
-                        <Input type="text" label="Name of idea" name="name" onChange={this.onInputChange} />
-                        <Input type="number" label="Price of idea (optional)" name="price" onChange={this.onInputChange} />
-                        {this.props.recipientId == null ? <Input type="select" label="Recipient" name="recipientId" onChange={this.onInputChange}>
-                            <option value={null}>No Recipient</option>
+                        {this.props.type == "toGift" ? "Update any values before turning into a gift. Remeber price is required for a gift" : null}
+                        <Input type="text" label="Name of idea" name="name" value={name} onChange={this.onInputChange} />
+                        <Input type="number" label={priceLabel} value={price} name="price" onChange={this.onInputChange} />
+                        <Input type="select" label="Recipient" name="recipientId" value={recipientId} onChange={this.onInputChange}>
+                            <option value={undefined}>No Recipient</option>
                             {recipients.map(recipient =>
                                 <option key={recipient._id} value={recipient._id}>{recipient.name}</option>
                             )}
-                        </Input> : null
-                        }
+                        </Input>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="danger" onClick={this.props.toggle}>Cancel</Button>
