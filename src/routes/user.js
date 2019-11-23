@@ -27,7 +27,9 @@ router.get("/byId", validate(fields.getUser), async (req, res) => {
 router.get("/byUsername", validate(fields.getUserByUsername), async (req, res) => {
     try {
         const username = req.query.username
-        let user = await getUserByUsername(username)
+        let whosAround = req.query.whosAround
+        whosAround = whosAround == '' ? [] : whosAround.split(",")
+        let user = await getUserByUsername(username, whosAround)
         if (!user)
             res.status(400).json({ message: "No user was found with that username" })
         else

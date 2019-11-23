@@ -7,6 +7,7 @@ import GiftModal from "./GiftModal"
 import IdeaModal from "./IdeaModal"
 import RecipientModal from "./RecipientModal"
 import RecipientList from "./RecipientList"
+import WhosAroundModal from './WhosAroundModal'
 import { Row, Col, Spinner, Button } from "reactstrap"
 
 
@@ -19,11 +20,14 @@ class App extends Component {
             showRecipientModal: false,
             showIdeaModal: false,
             showGiftModal: false,
+            showWhosAroundModal: true,
+            whosAround: []
         }
 
         this.requestServer = this.requestServer.bind(this)
         this.getUserInfo = this.getUserInfo.bind(this)
         this.toggle = this.toggle.bind(this)
+        this.checkWhosAround = this.checkWhosAround.bind(this)
     }
 
     async requestServer(endpoint, config) {
@@ -63,8 +67,9 @@ class App extends Component {
 
     async getUserInfo() {
         try {
-            let res = await this.requestServer("/user/byUsername?username=nickjm6")
+            let res = await this.requestServer(`/user/byUsername?username=nickjm6&whosAround=${this.state.whosAround}`)
             let user = res.user
+            user.recipients = user.recipients || []
             this.setState({ user, loading: false })
         } catch (err) {
             console.error(err)
@@ -88,15 +93,17 @@ class App extends Component {
          }
     }
 
+    checkWhosAround(whosAroundObject){
+        let whosAround = Object.keys(whosAroundObject).filter(recipient => whosAroundObject[recipient] === true)
+        this.setState({showWhosAroundModal: false, whosAround, loading: true})
+    }
+
     render() {
         let user = this.state.user;
         let message = user.username ? `Welcome ${user.username}` : "Searching for user..."
         let recipients = user.recipients || []
         let disableButtons = Object.keys(user).length == 0
-        let totalSpent = recipients.map(recipient => {
-            let gifts = recipient.gifts || []
-            return gifts.map(gift => gift.price).reduce((a, b) => a + b, 0)
-        }).reduce((a,b)=>a+b,0).toFixed(2)
+        let {totalSpent} = user
         return (
             <div>
                 <GiftModal requestServer={this.requestServer} recipients={recipients} type="add" disabled={disableButtons}
@@ -105,6 +112,7 @@ class App extends Component {
                     toggle={() => this.toggle("idea")} show={this.state.showIdeaModal} />
                 <RecipientModal requestServer={this.requestServer} type="add" disabled={disableButtons} 
                     toggle={() => this.toggle("recipient")} show={this.state.showRecipientModal} />
+                <WhosAroundModal recipients={recipients} show={this.state.showWhosAroundModal} confirm={this.checkWhosAround} />
                 <h1>{message}</h1><br />
                 <h2>So far this Christmas, you have spent ${totalSpent}</h2>
                 <Row className="modalSection">
@@ -118,7 +126,7 @@ class App extends Component {
                         <Button color="success" onClick={() => this.toggle("recipient")}>Add Recipient</Button>
                     </Col>
                 </Row>
-                {this.state.loading ? <Spinner></Spinner> :
+                {this.state.loading || this.state.showWhosAroundModal ? <Spinner></Spinner> :
                     <RecipientList requestServer={this.requestServer} recipients={recipients}></RecipientList>}
             </div>
         )

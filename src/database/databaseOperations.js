@@ -9,15 +9,20 @@ let getUser = async (id) => {
     return await User.findById(id)
 }
 
-let getUserByUsername = async (username) => {
+let getUserByUsername = async (username, whosAround) => {
     let user = await User.findOne({ username })
     if (!user)
         return null
     user.recipients = await getRecipientListByUser(user._id)
+    let totalSpent = user.recipients.map(recipient => {
+        let gifts = recipient.gifts || []
+        return gifts.map(gift => gift.price).reduce((a, b) => a + b, 0)
+    }).reduce((a,b)=>a+b,0).toFixed(2)
+    user.recipients = user.recipients.filter(recipient => !whosAround.includes(recipient.name))
     user.gifts = await getGiftsByUserNoRecipient(user._id)
     user.ideas = await getIdeasByUserNoRecipient(user._id)
     let { _id, recipients, gifts, ideas } = user;
-    user = { _id, username, recipients, gifts, ideas }
+    user = { _id, username, recipients, gifts, ideas, totalSpent }
     return user;
 }
 
