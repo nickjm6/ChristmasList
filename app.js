@@ -2,8 +2,19 @@ const express = require("express");
 const app = express()
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
+const cookieParser = require("cookie-parser")
+const session = require("express-session")
 
 require("dotenv").config()
+
+const passport = require("passport")
+const auth = require("./src/utils/auth")
+
+app.use(session({ secret: process.env.SESSION_SECRET }))
+auth(passport)
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(cookieParser())
 
 const mongoAddress = process.env.MONGO_ADDR
 if (!mongoAddress || typeof mongoAddress !== "string" || !/^mongodb:\/\/[a-zA-Z]+\/[a-zA-Z]+$/.test(mongoAddress))
@@ -22,6 +33,21 @@ app.use(bodyParser.json())
 app.get("/", (req, res) => {
     res.sendFile(`${__dirname}/frontend/index.html`)
 })
+
+app.get("/error", (req, res) => {
+    res.sendFile(`${__dirname}/frontend/error.html`)
+})
+
+app.get('/auth/google', passport.authenticate('google', {
+    scope: ['https://www.googleapis.com/auth/userinfo.profile']
+}));
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: '/',
+        failureRedirect: '/error'
+    })
+);
 
 app.use("/user", require("./src/routes/user"))
 app.use("/gift", require("./src/routes/gift"))

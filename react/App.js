@@ -8,6 +8,7 @@ import IdeaModal from "./IdeaModal"
 import RecipientModal from "./RecipientModal"
 import RecipientList from "./RecipientList"
 import WhosAroundModal from './WhosAroundModal'
+import GoogleAuthModal from './GoogleAuthModal'
 import { Row, Col, Spinner, Button, Alert } from "reactstrap"
 
 
@@ -20,10 +21,11 @@ class App extends Component {
             showRecipientModal: false,
             showIdeaModal: false,
             showGiftModal: false,
-            showWhosAroundModal: true,
             whosAround: [],
             message: null,
-            messageType: null
+            messageType: null,
+            signedIn: true,
+            recipientsConfirmed: false
         }
 
         this.requestServer = this.requestServer.bind(this)
@@ -69,6 +71,9 @@ class App extends Component {
             if (res.status == 200) {
                 return jsonRes;
             } else {
+                if(res.status == 401){
+                    this.setState({signedIn: false, unauthorized: true, loading: true, user: {}})
+                }
                 let message = jsonRes.message || jsonRes.errors || "An error occured, please check logs"
                 throw new Error(message)
             }
@@ -80,16 +85,19 @@ class App extends Component {
 
     async getUserInfo() {
         try {
-            let res = await this.requestServer(`/user/byUsername?username=nickjm6&whosAround=${this.state.whosAround}`)
+            if(this.state.unauthorized)
+                return
+            let res = await this.requestServer(`/user/?whosAround=${this.state.whosAround}`)
             let user = res.user
             user.recipients = user.recipients || []
-            this.setState({ user, loading: false })
+            let recipientsConfirmed = user.recipients.length == 0 || this.state.recipientsConfirmed
+            this.setState({ user, loading: false, signedIn: true, recipientsConfirmed })
         } catch (err) {
-            console.error(err)
+            this.setState({signedIn: false, user: {}, loading: true, unauthorized: true})
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.interval = setInterval(this.getUserInfo, 500)
     }
 
@@ -109,25 +117,26 @@ class App extends Component {
 
     checkWhosAround(whosAroundObject){
         let whosAround = Object.keys(whosAroundObject).filter(recipient => whosAroundObject[recipient] === true)
-        this.setState({showWhosAroundModal: false, whosAround, loading: true})
+        this.setState({whosAround, loading: true, recipientsConfirmed: true })
     }
 
     render() {
         let user = this.state.user;
         let message = user.username ? `Welcome ${user.username}` : "Searching for user..."
         let recipients = user.recipients || []
-        let disableButtons = Object.keys(user).length == 0
         let {totalSpent} = user
+        let showWhosAround = recipients.length > 0 && !this.state.recipientsConfirmed
         return (
             <div>
                 {this.state.message ? <Alert color={this.state.messageType}>{this.state.message}</Alert> : null}
+                <GoogleAuthModal show={!this.state.signedIn}></GoogleAuthModal>
                 <GiftModal requestServer={this.requestServer} recipients={recipients} type="add" setMessage={this.setMessage}
                     toggle={() => this.toggle("gift")} show={this.state.showGiftModal} />
                 <IdeaModal requestServer={this.requestServer} recipients={recipients} type="add" setMessage={this.setMessage}
                     toggle={() => this.toggle("idea")} show={this.state.showIdeaModal} />
                 <RecipientModal requestServer={this.requestServer} type="add" setMessage={this.setMessage} 
                     toggle={() => this.toggle("recipient")} show={this.state.showRecipientModal} />
-                <WhosAroundModal recipients={recipients} show={this.state.showWhosAroundModal} confirm={this.checkWhosAround} />
+                <WhosAroundModal recipients={recipients} show={showWhosAround} confirm={this.checkWhosAround} />
                 <h1 id="pageHeader">{message}</h1><br />
                 <h2>So far this Christmas, you have spent ${totalSpent}</h2>
                 <Row className="modalSection">
@@ -141,7 +150,7 @@ class App extends Component {
                         <Button color="success" onClick={() => this.toggle("recipient")}>Add Recipient</Button>
                     </Col>
                 </Row>
-                {this.state.loading || this.state.showWhosAroundModal ? <Spinner></Spinner> :
+                {this.state.loading || !this.state.recipientsConfirmed ? <Spinner></Spinner> :
                     <RecipientList requestServer={this.requestServer} recipients={recipients} dismissMessage={this.dismissMessage} setMessage={this.setMessage} />}
             </div>
         )

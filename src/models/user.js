@@ -1,7 +1,9 @@
 let {Schema, model} = require("mongoose")
 
 let userSchema = Schema({
-    username: {type: String, unique: true}
+    username: String,
+    token: String,
+    googleId: String,
 })
 
 let userModel = model("user", userSchema)

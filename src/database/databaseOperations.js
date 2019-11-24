@@ -7,11 +7,15 @@ const {NotFoundError, InvalidRequestError, DuplicateError} = require("../errors"
 //USER
 
 let getUser = async (id) => {
+    return await User.findOne({googleId: id})
+}
+
+let getUserById = async (id) => {
     return await User.findById(id)
 }
 
-let getUserByUsername = async (username, whosAround) => {
-    let user = await User.findOne({ username })
+let getUserInfo = async (id) => {
+    let user = await User.findById(id)
     if (!user)
         return null
     user.recipients = await getRecipientListByUser(user._id)
@@ -19,9 +23,9 @@ let getUserByUsername = async (username, whosAround) => {
         let gifts = recipient.gifts || []
         return gifts.map(gift => gift.price).reduce((a, b) => a + b, 0)
     }).reduce((a,b)=>a+b,0).toFixed(2)
-    user.recipients = user.recipients.filter(recipient => !whosAround.includes(recipient.name))
     user.gifts = await getGiftsByUserNoRecipient(user._id)
     user.ideas = await getIdeasByUserNoRecipient(user._id)
+    const username = user.username
     let { _id, recipients, gifts, ideas } = user;
     user = { _id, username, recipients, gifts, ideas, totalSpent }
     return user;
@@ -34,7 +38,7 @@ let addUser = async (req) => {
 }
 
 let removeUser = async (id) => {
-    let user = await getUser(id)
+    let user = await getUserById(id)
     if (!user)
         throw new NotFoundError("user", `Could not find a user with the id: '${id}'`)
     await removeRecipientByUser(id)
@@ -51,7 +55,7 @@ let getRecipient = async (_id) => {
 
 let addRecipient = async (req) => {
     let userId = req.userId;
-    let user = await getUser(userId)
+    let user = await getUserById(userId)
     if (!user)
         throw new NotFoundError("user", `Failed to find user with the id: '${userId}'`)
     let recipients = await getRecipientsByUserId(userId)
@@ -109,7 +113,7 @@ let getGift = async (id) => {
 
 let addGift = async (req) => {
     const { userId, recipientId } = req;
-    let user = await getUser(userId)
+    let user = await getUserById(userId)
     if (!user)
         throw new NotFoundError("user", `A user was not found with the id: '${userId}'`)
     if (recipientId != null) {
@@ -184,7 +188,7 @@ let getIdeasByUserNoRecipient = async (userId) => {
 
 let addIdea = async (req) => {
     const { userId, recipientId } = req;
-    let user = await getUser(userId)
+    let user = await getUserById(userId)
     if (!user)
         throw new NotFoundError("user", `A user was not found with the id: '${userId}'`)
     if (recipientId != null) {
@@ -237,7 +241,7 @@ let removeIdeaByUser = async (userId) => {
 }
 
 module.exports = {
-    user: { getUser, getUserByUsername, addUser, removeUser },
+    user: { getUser, getUserInfo, addUser, removeUser },
     recipient: { getRecipient, addRecipient, editRecipient, removeRecipient },
     gift: { getGift, addGift, editGift, removeGift },
     idea: { getIdea, addIdea, editIdea, removeIdea, ideaToGift }

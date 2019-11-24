@@ -3,6 +3,7 @@ const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
 const { getRecipient, addRecipient, removeRecipient, editRecipient } = require("../database/databaseOperations").recipient
+const authenticate = require("../utils/authenticate")
 
 const fields = {
     getRecipient: { id: "objectid" },
@@ -11,6 +12,8 @@ const fields = {
     editRecipientValues: { name: "string", priceLimit: "number" },
     removeRecipient: { id: "objectid" }
 }
+
+router.use(authenticate())
 
 router.get("/", validate(fields.getRecipient), async (req, res) => {
     try {
@@ -28,7 +31,8 @@ router.get("/", validate(fields.getRecipient), async (req, res) => {
 
 router.post("/", validate(fields.addRecipient), async (req, res) => {
     try {
-        const { name, priceLimit, userId } = req.body;
+        const { name, priceLimit } = req.body;
+        const userId = req.user._id
         const recipientReq = { name, priceLimit, userId }
         let newRecipientId = await addRecipient(recipientReq)
         res.json({message: "Successfully added recipient", id: newRecipientId })

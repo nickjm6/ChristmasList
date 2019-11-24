@@ -3,6 +3,7 @@ const router = express.Router()
 const validate = require("../utils/validateBody")
 const sanitize = require("../utils/sanititizeBody")
 const { getGift, addGift, removeGift, editGift } = require("../database/databaseOperations").gift
+const authenticate = require("../utils/authenticate")
 
 const fields = {
     getGift: { id: "objectid" },
@@ -11,6 +12,8 @@ const fields = {
     editGiftValues: { name: "string", price: "number", recipientId: "objectid" },
     removeGift: { id: "objectid" }
 }
+
+router.use(authenticate())
 
 router.get("/", validate(fields.getGift), async (req, res) => {
     try {
@@ -28,7 +31,8 @@ router.get("/", validate(fields.getGift), async (req, res) => {
 
 router.post("/", validate(fields.addGift), async (req, res) => {
     try {
-        const { name, price, recipientId, userId } = req.body;
+        const { name, price, recipientId } = req.body;
+        const userId = req.user._id
         const giftReq = { name, price, recipientId, userId }
         let newGiftId = await addGift(giftReq);
         res.json({message: "Succesfully added gift", id: newGiftId })
