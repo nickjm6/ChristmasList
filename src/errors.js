@@ -23,4 +23,16 @@ class NotFoundError extends Error {
     }
 }
 
-module.exports = {NotFoundError, InvalidRequestError}
+class DuplicateError extends Error {
+    constructor(...params){
+        super(...params)
+
+        if(Error.captureStackTrace) {
+            Error.captureStackTrace(this, NotFoundError)
+        }
+
+        this.name = "DuplicateError"
+    }
+}
+
+module.exports = {NotFoundError, InvalidRequestError, DuplicateError}

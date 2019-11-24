@@ -2,7 +2,7 @@ const User = require("../models/user")
 const Gift = require("../models/gift")
 const Idea = require("../models/idea")
 const Recipient = require("../models/recipient")
-const {NotFoundError, InvalidRequestError} = require("../errors")
+const {NotFoundError, InvalidRequestError, DuplicateError} = require("../errors")
 
 //USER
 
@@ -54,6 +54,9 @@ let addRecipient = async (req) => {
     let user = await getUser(userId)
     if (!user)
         throw new NotFoundError("user", `Failed to find user with the id: '${userId}'`)
+    let recipients = await getRecipientsByUserId(userId)
+    if(recipients.includes(req.name))
+        throw new DuplicateError("User already has a recipient with that name")
     let newRecipient = new Recipient(req)
     await newRecipient.save()
     return newRecipient._id;
@@ -73,6 +76,11 @@ let removeRecipient = async (id) => {
     removeRecipientFromGifts(id)
     removeRecipientFromIdeas(id)
     await Recipient.findByIdAndDelete(id)
+}
+
+let getRecipientsByUserId = async (userId) => {
+    let recipients = await Recipient.find({userId})
+    return recipients.map(recipient => recipient.name)
 }
 
 let getRecipientListByUser = async (userId) => {

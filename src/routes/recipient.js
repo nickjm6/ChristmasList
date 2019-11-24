@@ -36,6 +36,8 @@ router.post("/", validate(fields.addRecipient), async (req, res) => {
         console.error(err)
         if (err.name == "NotFoundError") {
             res.status(400).json({ message: "The user you are trying to add a recipient to was not found" })
+        } else if(err.name == "DuplicateError") {
+            res.status(400).json({message: err.message})
         } else {
             res.status(500).json({ message: "An internal server error occured" })
         }
