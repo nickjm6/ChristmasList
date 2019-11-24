@@ -200,7 +200,7 @@ let ideaToGift = async (ideaId, values) => {
     const newGift = new Gift({
         name: values.name || idea.name,
         price,
-        recipientId: idea.recipientId
+        recipientId: values.recipientId || idea.recipientId
     })
     await removeIdea(ideaId)
     await newGift.save()

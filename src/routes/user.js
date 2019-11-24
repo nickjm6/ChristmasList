@@ -45,7 +45,7 @@ router.post("/", validate(fields.addUser), async (req, res) => {
         const { username } = req.body;
         const userReq = { username }
         let newUserId = await addUser(userReq);
-        res.json({ id: newUserId })
+        res.json({message: "Successfully added user", id: newUserId })
     } catch (err) {
         if (err.name == "MongoError" && err.code == 11000) {
             res.status(400).json({ message: "Username already exists!" })

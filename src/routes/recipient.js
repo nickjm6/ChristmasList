@@ -31,7 +31,7 @@ router.post("/", validate(fields.addRecipient), async (req, res) => {
         const { name, priceLimit, userId } = req.body;
         const recipientReq = { name, priceLimit, userId }
         let newRecipientId = await addRecipient(recipientReq)
-        res.json({ id: newRecipientId })
+        res.json({message: "Successfully added recipient", id: newRecipientId })
     } catch (err) {
         console.error(err)
         if (err.name == "NotFoundError") {

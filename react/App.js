@@ -8,7 +8,7 @@ import IdeaModal from "./IdeaModal"
 import RecipientModal from "./RecipientModal"
 import RecipientList from "./RecipientList"
 import WhosAroundModal from './WhosAroundModal'
-import { Row, Col, Spinner, Button } from "reactstrap"
+import { Row, Col, Spinner, Button, Alert } from "reactstrap"
 
 
 class App extends Component {
@@ -21,13 +21,26 @@ class App extends Component {
             showIdeaModal: false,
             showGiftModal: false,
             showWhosAroundModal: true,
-            whosAround: []
+            whosAround: [],
+            message: null,
+            messageType: null
         }
 
         this.requestServer = this.requestServer.bind(this)
         this.getUserInfo = this.getUserInfo.bind(this)
         this.toggle = this.toggle.bind(this)
         this.checkWhosAround = this.checkWhosAround.bind(this)
+        this.setMessage = this.setMessage.bind(this)
+        this.dismissMessage = this.dismissMessage.bind(this)
+    }
+
+    setMessage(message, type){
+        this.setState({message, messageType: type})
+        window.scrollTo(0, 0)
+    }
+
+    dismissMessage(){
+        this.setState({message: null, messageType: null})
     }
 
     async requestServer(endpoint, config) {
@@ -61,7 +74,7 @@ class App extends Component {
             }
         } catch (err) {
             console.error(err)
-            throw new Error("Oops, something went wrong")
+            throw new Error(err.message)
         }
     }
 
@@ -81,6 +94,7 @@ class App extends Component {
     }
 
     toggle(modalType) {
+        this.dismissMessage()
          switch(modalType){
              case "gift":
                 this.setState({showGiftModal: !this.state.showGiftModal})
@@ -106,14 +120,15 @@ class App extends Component {
         let {totalSpent} = user
         return (
             <div>
-                <GiftModal requestServer={this.requestServer} recipients={recipients} type="add" disabled={disableButtons}
+                {this.state.message ? <Alert color={this.state.messageType}>{this.state.message}</Alert> : null}
+                <GiftModal requestServer={this.requestServer} recipients={recipients} type="add" setMessage={this.setMessage}
                     toggle={() => this.toggle("gift")} show={this.state.showGiftModal} />
-                <IdeaModal requestServer={this.requestServer} recipients={recipients} type="add" disabled={disableButtons}
+                <IdeaModal requestServer={this.requestServer} recipients={recipients} type="add" setMessage={this.setMessage}
                     toggle={() => this.toggle("idea")} show={this.state.showIdeaModal} />
-                <RecipientModal requestServer={this.requestServer} type="add" disabled={disableButtons} 
+                <RecipientModal requestServer={this.requestServer} type="add" setMessage={this.setMessage} 
                     toggle={() => this.toggle("recipient")} show={this.state.showRecipientModal} />
                 <WhosAroundModal recipients={recipients} show={this.state.showWhosAroundModal} confirm={this.checkWhosAround} />
-                <h1>{message}</h1><br />
+                <h1 id="pageHeader">{message}</h1><br />
                 <h2>So far this Christmas, you have spent ${totalSpent}</h2>
                 <Row className="modalSection">
                     <Col className="modal-button" md={{ offset: 3, size: 2 }}>
@@ -127,7 +142,7 @@ class App extends Component {
                     </Col>
                 </Row>
                 {this.state.loading || this.state.showWhosAroundModal ? <Spinner></Spinner> :
-                    <RecipientList requestServer={this.requestServer} recipients={recipients}></RecipientList>}
+                    <RecipientList requestServer={this.requestServer} recipients={recipients} dismissMessage={this.dismissMessage} setMessage={this.setMessage} />}
             </div>
         )
     }

@@ -22,3 +22,5 @@ class NotFoundError extends Error {
         this.name = "NotFoundError"
     }
 }
+
+module.exports = {NotFoundError, InvalidRequestError}

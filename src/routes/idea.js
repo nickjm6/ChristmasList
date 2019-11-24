@@ -31,7 +31,7 @@ router.post("/", validate(fields.addIdea), async (req, res) => {
         const { name, price, recipientId, userId } = req.body;
         const ideaReq = { name, price, recipientId, userId }
         let newIdeaId = await addIdea(ideaReq)
-        res.json({ id: newIdeaId })
+        res.json({message: "Successfully added idea", id: newIdeaId })
     } catch (err) {
         console.error(err)
         if (err.name == "NotFoundError") {
