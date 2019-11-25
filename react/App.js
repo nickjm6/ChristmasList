@@ -48,6 +48,9 @@ class App extends Component {
     async requestServer(endpoint, config) {
         try {
             if (config != null) {
+                if(config.method != "GET"){
+                    this.setState({loading: true})
+                }
                 if (config.addUserId === true) {
                     config.addUserId = undefined;
                     let jsonBody;
