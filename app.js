@@ -17,7 +17,7 @@ app.use(passport.session())
 app.use(cookieParser())
 
 const mongoAddress = process.env.MONGO_ADDR
-if (!mongoAddress || typeof mongoAddress !== "string" || !/^mongodb:\/\/[a-zA-Z]+\/[a-zA-Z]+$/.test(mongoAddress))
+if (!mongoAddress || typeof mongoAddress !== "string")
     throw new Error("please set a valid mongodb address in .env with the name MONGO_ADDR")
 
 mongoose.set("useUnifiedTopology", true)
