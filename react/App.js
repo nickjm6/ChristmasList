@@ -11,6 +11,10 @@ import WhosAroundModal from './WhosAroundModal'
 import GoogleAuthModal from './GoogleAuthModal'
 import { Row, Col, Spinner, Button, Alert } from "reactstrap"
 
+let sleep = async (s) => new Promise(resolve => {
+    setTimeout(resolve, s*1000)
+})
+
 
 class App extends Component {
     constructor(props) {
@@ -25,7 +29,8 @@ class App extends Component {
             message: null,
             messageType: null,
             signedIn: true,
-            recipientsConfirmed: false
+            recipientsConfirmed: false,
+            shouldFetch: true
         }
 
         this.requestServer = this.requestServer.bind(this)
@@ -47,6 +52,8 @@ class App extends Component {
 
     async requestServer(endpoint, config) {
         try {
+            await this.setState({shouldFetch: false})
+            await sleep(1)
             if (config != null) {
                 if(config.method != "GET"){
                     this.setState({loading: true})
@@ -83,12 +90,14 @@ class App extends Component {
         } catch (err) {
             console.error(err)
             throw new Error(err.message)
+        } finally {
+            this.setState({shouldFetch: true})
         }
     }
 
     async getUserInfo() {
         try {
-            if(this.state.unauthorized)
+            if(this.state.unauthorized || !this.state.shouldFetch)
                 return
             let res = await this.requestServer(`/user/?whosAround=${this.state.whosAround}`)
             let user = res.user
