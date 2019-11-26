@@ -53,10 +53,6 @@ class GiftModal extends Component {
             this.addError("Please enter a name for the gift")
             clean = false;
         }
-        if (!req.price) {
-            this.addError("Please enter a price for the gift")
-            clean = false
-        }
         return clean;
     }
 

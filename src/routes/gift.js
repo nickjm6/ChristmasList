@@ -7,7 +7,7 @@ const authenticate = require("../utils/authenticate")
 
 const fields = {
     getGift: { id: "objectid" },
-    addGift: { name: "string", price: "number", userId: "objectid" },
+    addGift: { name: "string", userId: "objectid" },
     editGift: { id: "objectid", values: "object" },
     editGiftValues: { name: "string", price: "number", recipientId: "objectid" },
     removeGift: { id: "objectid" }
