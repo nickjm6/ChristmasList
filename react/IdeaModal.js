@@ -53,9 +53,9 @@ class IdeaModal extends Component {
             this.addError("Please enter a name for the idea")
             clean = false
         }
-        if (!req.price) {
-            req.price = undefined
-            this.setState({ requestData: req })
+        if(req.price == null && this.props.type == "toGift"){
+            this.addError("Please enter a value for gift (hint: 0 is a value)")
+            clean = false
         }
         return clean;
     }

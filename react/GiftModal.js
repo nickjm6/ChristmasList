@@ -53,6 +53,10 @@ class GiftModal extends Component {
             this.addError("Please enter a name for the gift")
             clean = false;
         }
+        if(req.price == null){
+            this.addError("Please enter a value for the gift (hint: 0 is a value)")
+            clean = false
+        }
         return clean;
     }
 
@@ -62,9 +66,10 @@ class GiftModal extends Component {
         if (!goodRequest)
             return;
         this.props.toggle()
+        let req = this.state.requestData
         let method = this.props.type == "add" ? "POST" : "PUT"
-        let data = this.props.type == "add" ? this.state.requestData : {
-            values: this.state.requestData,
+        let data = this.props.type == "add" ? req : {
+            values: req,
             id: this.state.id
         }
 

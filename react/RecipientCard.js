@@ -89,9 +89,14 @@ class RecipientCard extends Component {
         let gifts = recipient.gifts || []
         let ideas = recipient.ideas || []
         let total = gifts.map(gift => gift.price).reduce((a, b) => a + b, 0).toFixed(2)
-        let limit = recipient.priceLimit.toFixed(2)
-        let percentDiff = Math.abs(total - limit) / (limit * 1.0)
-        let color = percentDiff < .1 ? "success" : percentDiff < .15 ? "warning" : "danger"
+        let limit;
+        let percentDiff;  
+        let color = "primary"
+        if(recipient.priceLimit){
+            limit = recipient.priceLimit.toFixed(2)
+            percentDiff = Math.abs(total - limit) / (limit * 1.0)
+            color = percentDiff < .1 ? "success" : percentDiff < .15 ? "warning" : "danger"
+        }
         return (
             <Card className="card-col">
                 <GiftModal requestServer={this.props.requestServer} type={this.state.giftModalType} values={this.state.giftValues}
@@ -105,7 +110,7 @@ class RecipientCard extends Component {
                 <ConfirmationModal toggle={() => this.dismiss("confirmation")} show={this.state.showConfirmationModal}
                     confirm={this.state.deleteFunction} title={this.state.deleteTitle} />
                 <CardHeader>
-                    {recipient.name} (${limit})
+                    {recipient.name} {limit ? `($${limit})` : null}
                     <Icon className="icon header-icon"
                         onClick={() => this.toggle("confirmation", "recipient", { values: recipient, title: "Delete Recipient" })} icon={bin} />
                     <Icon className="icon header-icon" icon={edit} onClick={() => this.toggle("recipient", "edit")} />

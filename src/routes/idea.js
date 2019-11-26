@@ -57,6 +57,9 @@ router.post("/makeGift", validate(fields.editIdea), sanitize(fields.editIdeaValu
             case "NotFoundError":
                 res.status(400).json({ message: `Failed to find the idea that you are trying to make a gift` })
                 break;
+            case "InvalidRequestError":
+                res.status(400).json({ message: err.message })
+                break;
             default:
                 res.status(500).json({ message: "An internal server error occured" })
         }

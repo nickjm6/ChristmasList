@@ -23,14 +23,14 @@ const MyTable = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {content.map(row =>
-                        <tr key={row.name}>
+                    {content.map((row, i) =>
+                        <tr key={i}>
                             <td>
                                 <h5><Badge color="success">{row.name}</Badge></h5>
                             </td>
                             <td>
                                 <h5>
-                                    <Badge color="danger">${row.price ? row.price.toFixed(2) : "?"}</Badge>
+                                    <Badge color="danger">${typeof row.price == "number" ? row.price.toFixed(2) : "?"}</Badge>
                                 </h5>
                             </td>
                             <td>

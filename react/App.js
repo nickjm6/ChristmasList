@@ -135,9 +135,16 @@ class App extends Component {
     render() {
         let user = this.state.user;
         let message = user.username ? `Welcome ${user.username}` : "Searching for user..."
-        let recipients = user.recipients || []
+        let recipientList = user.recipients || []
+        let giftsWithoutRecipient = {
+            name: "Gifts and ideas with no recipient",
+            gifts: user.gifts || [],
+            ideas: user.ideas || [],
+            _id: "#NoRecipient"
+        }
+        let recipients = [giftsWithoutRecipient].concat(recipientList)
         let {totalSpent} = user
-        let showWhosAround = recipients.length > 0 && !this.state.recipientsConfirmed
+        let showWhosAround = recipientList.length > 0 && !this.state.recipientsConfirmed
         return (
             <div>
                 {this.state.message ? <Alert color={this.state.messageType}>{this.state.message}</Alert> : null}
@@ -148,7 +155,7 @@ class App extends Component {
                     toggle={() => this.toggle("idea")} show={this.state.showIdeaModal} />
                 <RecipientModal requestServer={this.requestServer} type="add" setMessage={this.setMessage} 
                     toggle={() => this.toggle("recipient")} show={this.state.showRecipientModal} />
-                <WhosAroundModal recipients={recipients} show={showWhosAround} confirm={this.checkWhosAround} />
+                <WhosAroundModal recipients={recipientList} show={showWhosAround} confirm={this.checkWhosAround} />
                 <h1 id="pageHeader">{message}</h1><br />
                 <h2>So far this Christmas, you have spent ${totalSpent}</h2>
                 <Row className="modalSection">
