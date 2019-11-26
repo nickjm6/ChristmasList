@@ -2,7 +2,7 @@ const User = require("../models/user")
 const Gift = require("../models/gift")
 const Idea = require("../models/idea")
 const Recipient = require("../models/recipient")
-const {NotFoundError, InvalidRequestError, DuplicateError} = require("../errors")
+const {NotFoundError, DuplicateError} = require("../errors")
 
 //USER
 
@@ -205,13 +205,9 @@ let ideaToGift = async (ideaId, values) => {
     const idea = await Idea.findById(ideaId)
     if (!idea)
         throw new NotFoundError("idea", `An idea was not found with the id: '${ideaId}'`)
-    let price = values.price || idea.price
-    if(!price){
-        throw new InvalidRequestError("Price is required for a gift!")
-    }
     const newGift = new Gift({
         name: values.name || idea.name,
-        price,
+        price: values.price || idea.price,
         recipientId: values.recipientId || idea.recipientId
     })
     await removeIdea(ideaId)

@@ -54,10 +54,6 @@ class IdeaModal extends Component {
             clean = false
         }
         if (!req.price) {
-            if (this.props.type == "toGift") {
-                this.addError("Please enter a price for the gift")
-                clean = false
-            }
             req.price = undefined
             this.setState({ requestData: req })
         }
@@ -104,7 +100,7 @@ class IdeaModal extends Component {
                     <ModalHeader toggle={this.props.toggle}>{title}</ModalHeader>
                     <ModalBody>
                         {this.state.errors.map(error => <Alert key={error} color="danger">{error}</Alert>)}
-                        {this.props.type == "toGift" ? "Update any values before turning into a gift. Remeber price is required for a gift" : null}
+                        {this.props.type == "toGift" ? "Update any values before turning into a gift" : null}
                         <Input type="text" label="Name of idea" name="name" value={name} onChange={this.onInputChange} />
                         <Input type="number" label={priceLabel} value={price} name="price" onChange={this.onInputChange} />
                         <Input type="select" label="Recipient" name="recipientId" value={recipientId} onChange={this.onInputChange}>
