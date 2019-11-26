@@ -15,8 +15,8 @@ class RecipientList extends Component {
     renderRow(arr,i){
         return (
             <Row key={i} className="recipient-row">
-                {arr.map(r => 
-                    <Col key={r._id} md="6" className="col-card">
+                {arr.map((r,j) => 
+                    <Col key={`${i}${j}`} md="6" className="col-card">
                         <RecipientCard requestServer={this.props.requestServer} recipient={r} recipients={this.props.recipients} 
                             dismissMessage={this.props.dismissMessage} setMessage={this.props.setMessage} />
                     </Col>

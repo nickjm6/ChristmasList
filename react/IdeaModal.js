@@ -105,8 +105,8 @@ class IdeaModal extends Component {
                         <Input type="number" label={priceLabel} value={price} name="price" onChange={this.onInputChange} />
                         <Input type="select" label="Recipient" name="recipientId" value={recipientId} onChange={this.onInputChange}>
                             <option value={undefined}>No Recipient</option>
-                            {recipients.map(recipient =>
-                                <option key={recipient._id} value={recipient._id}>{recipient.name}</option>
+                            {recipients.map((recipient, i) =>
+                                <option key={i} value={recipient._id}>{recipient.name}</option>
                             )}
                         </Input>
                     </ModalBody>

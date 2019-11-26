@@ -104,8 +104,8 @@ class GiftModal extends Component {
                         <Input type="number" label="Price of gift" name="price" value={price} onChange={this.onInputChange} />
                         <Input type="select" label="Recipient" name="recipientId" value={recipientId} onChange={this.onInputChange}>
                             <option value={undefined}>No Recipient</option>
-                            {recipients.map(recipient =>
-                                <option key={recipient._id} value={recipient._id}>{recipient.name}</option>
+                            {recipients.map((recipient, i) =>
+                                <option key={i} value={recipient._id}>{recipient.name}</option>
                             )}
                         </Input>
                     </ModalBody>

@@ -22,8 +22,8 @@ class WhosAroundModal extends Component {
                 <ModalHeader>Who's Around?</ModalHeader>
                 <ModalBody>
                     Select who is around so they can't see their gifts!
-                {recipients.map(recipient => 
-                    <CheckBox key={recipient._id} name={recipient.name} checkBox={this.checkBox} />
+                {recipients.map((recipient, i) => 
+                    <CheckBox key={i} name={recipient.name} checkBox={this.checkBox} />
                 )}
                 </ModalBody>
                 <ModalFooter>

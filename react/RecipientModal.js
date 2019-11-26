@@ -83,7 +83,6 @@ class RecipientModal extends Component {
         try {
             let res = await this.props.requestServer("/recipient", config)
             let message = res.message || "Success"
-            console.dir(res)
             this.props.setMessage(message, "success")
         } catch (err) {
             this.props.setMessage(err.message, "danger")
