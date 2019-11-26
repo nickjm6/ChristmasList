@@ -91,7 +91,7 @@ class IdeaModal extends Component {
 
     render() {
         let recipients = this.props.recipients || []
-        let title = this.props.type == "add" ? "Add Idea" : this.props.type == "edit" ? "Edit Idea" : "Turn gift into idea"
+        let title = this.props.type == "add" ? "Add Idea" : this.props.type == "edit" ? "Edit Idea" : "Turn idea into gift"
         let priceLabel = this.props.type == "toGift" ? "Price" : "Price (Optional)"
         let { name, price, recipientId } = this.state.requestData
         return (
